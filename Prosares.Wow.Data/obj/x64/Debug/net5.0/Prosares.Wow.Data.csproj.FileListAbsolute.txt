@@ -1,0 +1,15 @@
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\bin\x64\Debug\net5.0\Prosares.Wow.Data.deps.json
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\bin\x64\Debug\net5.0\Prosares.Wow.Data.runtimeconfig.json
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\bin\x64\Debug\net5.0\Prosares.Wow.Data.runtimeconfig.dev.json
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\bin\x64\Debug\net5.0\Prosares.Wow.Data.dll
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\bin\x64\Debug\net5.0\Prosares.Wow.Data.pdb
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.csproj.AssemblyReference.cache
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.AssemblyInfoInputs.cache
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.AssemblyInfo.cs
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.csproj.CoreCompileInputs.cache
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.dll
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\refint\Prosares.Wow.Data.dll
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.pdb
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\Prosares.Wow.Data.genruntimeconfig.cache
+C:\Users\tlokh\OneDrive\Desktop\Project\WOW_proj\Prosares.Wow.Data\obj\x64\Debug\net5.0\ref\Prosares.Wow.Data.dll
