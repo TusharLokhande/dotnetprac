@@ -52,6 +52,7 @@ namespace Prosares.Wow.Data.Services.Customers
             {
 
                 SearchText = k => k.Name.Contains(value.searchText) || k.Abbreviation.Contains(value.searchText);
+                
 
             }
             else

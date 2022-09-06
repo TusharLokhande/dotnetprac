@@ -34,7 +34,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
             Expression<Func<Entities.CapacityUtilizationReport, bool>> InitialCondition;
             Expression<Func<Entities.CapacityUtilizationReport, bool>> SearchText;
 
-            
+            InitialCondition = k => k.Id != 0;
 
             SqlCommand command = new SqlCommand("stp_capacityallocation");
             command.CommandType = CommandType.StoredProcedure;
@@ -46,35 +46,50 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
             command.Parameters.Add("@todate", SqlDbType.Date).Value = value.ToDate;
 
             var data = _capacity.GetRecords(command);
-          
-            //if(value.MasterType == "Resource")
-            //{
-            //    if (value.searchText != null)
-            //    {
-                       
-            //           data  = data.Where(k => k.Resource.Contains(value.searchText) || k.EngagementType.Contains(value.searchText));
-            //    }
-            //    else
-            //    {
-            //        data = data.Where(k => k.Resource.Contains(""));
-            //    }
-
-
-            //    if (value.sortColumn == "" || value.sortDirection == "")
-            //    {
-            //      data  = data.OrderBy(x => x.Resource);
-            //    }
-            //    else if (value.sortDirection == "desc")
-            //    {
-            //        data = data.
-            //    }
-            //}
 
             
 
+            if (value.MasterType == "Resource")
+            {
+                if (value.searchText != "")
+                {
 
+                    SearchText = k => k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower());
+                  
+                }
+                else
+                {
+                    SearchText = k => k.Resource != "";
+                }
 
+                if (value.sortColumn == "" || value.sortDirection == "" )
+                {
+                    data = data.AsQueryable().Where(SearchText).OrderByPropertyDescending("mandaysPlanned").ToList();
+                }
+                else if (value.sortDirection == "desc")
+                {
+                   data = data.AsQueryable().Where(SearchText).OrderByPropertyDescending(value.sortColumn).ToList();
+                }
+                else if (value.sortDirection == "asc")
+                {
+                    data = data.AsQueryable().Where(SearchText).OrderByProperty(value.sortColumn).ToList();
+                }
+            }
 
+            //if(value.MasterType == "Engagement")
+            //{
+
+            //}
+
+            //if(value.MasterType == "Engagement Resource")
+            //{
+
+            //}
+
+            //if(value.MasterType == "Engagement Type")
+            //{
+
+            //}
             return data;
         }
 

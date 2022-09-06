@@ -1,6 +1,7 @@
 import { TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { request } from "http";
 import moment from "moment";
 import React, { useState, useEffect } from "react";
 import DynamicGrid from "../../../Components/DynamicGrid/DynamicGrid";
@@ -25,7 +26,11 @@ const CapacityUtilizationReport = () => {
   const [engagementTypeSelectedData, setEngagementTypeSelectedData] = useState(
     []
   );
-  const [masterType, setMasterType] = useState([]);
+  const [masterType, setMasterType] = useState({
+    value: "Engagement",
+    label: "Engagement",
+    id: 1,
+  });
   const [requestObject, setRequestObject] = useState([]);
   const [gridType, setGridType] = useState([]);
   const [pageSize, setPageSize] = useState(10);
@@ -41,7 +46,26 @@ const CapacityUtilizationReport = () => {
     GetEngagementTypeData();
   }, []);
 
-  console.log(customerSelectData);
+  useEffect(() => {
+    let customers = ConvertArrayToString(customerSelectData);
+    let engagements = ConvertArrayToString(engagementSelectedData);
+    let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
+
+    let requestData = {
+      MasterType: masterType.value,
+      Customers: customers,
+      Engagements: engagements,
+      EngagementTypes: engagementTypes,
+      FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
+      ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+      sortColumn,
+      sortDirection,
+      searchText,
+    };
+
+    let s = Response(requestData, masterType);
+    console.log(requestData, s);
+  }, [sortDirection, sortColumn, searchText]);
 
   const masterTypeOptions = [
     { value: "Engagement", label: "Engagement", id: 1 },
@@ -68,7 +92,7 @@ const CapacityUtilizationReport = () => {
 
   const GetEngagementData = async () => {
     let { data } = await APICall(getCapacityUtilizationEngagement, "POST", {});
-    console.log("Engagement: ", data);
+
     let options = [];
     data.map((item, index) => {
       options.push({ value: item.name, label: item.name, id: item.id });
@@ -118,55 +142,36 @@ const CapacityUtilizationReport = () => {
       let customers = ConvertArrayToString(customerSelectData);
       let engagements = ConvertArrayToString(engagementSelectedData);
       let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
-      if (event.value === "Resource") {
-        let requestData = {
-          MasterType: "Resource",
-          Customers: customers,
-          Engagements: engagements,
-          EngagementTypes: engagementTypes,
-          FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-          ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
-        };
 
+      let requestData = {
+        MasterType: "",
+        Customers: customers,
+        Engagements: engagements,
+        EngagementTypes: engagementTypes,
+        FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
+        ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+      };
+
+      if (event.value === "Resource") {
+        requestData.MasterType = "Resource";
         let s = Response(requestData, "Resource");
         setGridType(gridColumns_Resource);
       }
 
       if (event.value === "Engagement") {
-        let requestData = {
-          MasterType: "Engagement",
-          Customers: customers,
-          Engagements: engagements,
-          EngagementTypes: engagementTypes,
-          FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-          ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
-        };
+        requestData.MasterType = "Engagement";
         let s = Response(requestData, "");
         setGridType(gridColumns_Engagement);
       }
 
       if (event.value === "Engagement Resource") {
-        let requestData = {
-          MasterType: "Engagement Resource",
-          Customers: customers,
-          Engagements: engagements,
-          EngagementTypes: engagementTypes,
-          FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-          ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
-        };
+        requestData.MasterType = "Engagement Resource";
         let s = Response(requestData, "");
         setGridType(gridColumns_EngagementResource);
       }
 
       if (event.value === "Engagement Type") {
-        let requestData = {
-          MasterType: "Engagement Type",
-          Customers: customers,
-          Engagements: engagements,
-          EngagementTypes: engagementTypes,
-          FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-          ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
-        };
+        requestData.MasterType = "Engagement Type";
         let s = Response(requestData, "");
         setGridType(gridColumns_EngagementType);
       }
@@ -182,7 +187,6 @@ const CapacityUtilizationReport = () => {
   const Response = async (obj, api) => {
     const { data } = await APICall(getCapacityAllocation, "POST", obj);
     setRequestObject(data);
-    console.log(obj, data);
   };
 
   const gridColumns_Resource = [
@@ -360,6 +364,7 @@ const CapacityUtilizationReport = () => {
     },
     onColumnSortChange: async (sortColumn, sortDirection) => {
       if (sortDirection === "asc") {
+        console.log(sortColumn, sortDirection);
         await setSortColumn(sortColumn);
         await setSortDirection(sortDirection);
       }
@@ -367,6 +372,7 @@ const CapacityUtilizationReport = () => {
         await setSortColumn(sortColumn);
         await setSortDirection(sortDirection);
       }
+      console.log(sortDirection, sortColumn);
     },
     onChangePage: async (page) => {
       setStart(page * pageSize);
