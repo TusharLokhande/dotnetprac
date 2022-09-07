@@ -143,7 +143,7 @@ const TimeSheetPolicyEdit = () => {
               </div>
             </div>
 
-            <div className="col-lg-4 col-md-4 col-sm-6 ">
+            <div className="col-lg-3 col-md-4 col-sm-6 align-self-end">
               <div className="form-group">
                 <label
                   htmlFor="isTimeSheetApplicable"
@@ -161,7 +161,7 @@ const TimeSheetPolicyEdit = () => {
               </div>
             </div>
 
-            <div className="col-lg-4 col-md-4 col-sm-6 ">
+            <div className="col-lg-2 col-md-4 col-sm-6 align-self-end">
               <div className="form-group">
                 <label htmlFor="isActive" className="d-inline-block mr-2">
                   Is Active

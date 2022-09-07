@@ -46,10 +46,7 @@ namespace Prosares.Wow.Data.Entities
         public float BalanceMandays { get; set; }
 
 
-        [StringLength(500)]
-        public string Name { get; set; }
-        [StringLength(500)]
-        public string Abbreviation { get; set; }
+        public long count { get; set; }
         public string sortColumn { get; set; }
         public string sortDirection { get; set; }
         public int pageSize { get; set; }

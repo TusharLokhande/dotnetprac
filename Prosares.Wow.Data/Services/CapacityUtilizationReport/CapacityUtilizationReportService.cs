@@ -31,10 +31,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
 
         public dynamic GetCapacityAllocation(Entities.CapacityUtilizationReport value)
         {
-            Expression<Func<Entities.CapacityUtilizationReport, bool>> InitialCondition;
-            Expression<Func<Entities.CapacityUtilizationReport, bool>> SearchText;
-
-            InitialCondition = k => k.Id != 0;
+            CapacityUtilizationReportResponse response = new CapacityUtilizationReportResponse();
 
             SqlCommand command = new SqlCommand("stp_capacityallocation");
             command.CommandType = CommandType.StoredProcedure;
@@ -46,52 +43,169 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
             command.Parameters.Add("@todate", SqlDbType.Date).Value = value.ToDate;
 
             var data = _capacity.GetRecords(command);
+            var count = data.Count();
 
             
-
             if (value.MasterType == "Resource")
             {
-                if (value.searchText != "")
-                {
+               
 
-                    SearchText = k => k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower());
-                  
-                }
-                else
+                if (value.sortColumn == "" || value.sortDirection == "" || value.sortColumn == null)
                 {
-                    SearchText = k => k.Resource != "";
-                }
-
-                if (value.sortColumn == "" || value.sortDirection == "" )
-                {
-                    data = data.AsQueryable().Where(SearchText).OrderByPropertyDescending("mandaysPlanned").ToList();
-                }
+                    
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
+                } 
+                
                 else if (value.sortDirection == "desc")
                 {
-                   data = data.AsQueryable().Where(SearchText).OrderByPropertyDescending(value.sortColumn).ToList();
+                    
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
+
                 }
+                
                 else if (value.sortDirection == "asc")
                 {
-                    data = data.AsQueryable().Where(SearchText).OrderByProperty(value.sortColumn).ToList();
+                    
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
+
+                }
+                
+            }
+
+            if (value.MasterType == "Engagement")
+            {
+                if (value.sortColumn == "" || value.sortDirection == "" || value.sortColumn == null)
+                {
+
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())|| k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
+                }
+
+                else if (value.sortDirection == "desc")
+                {
+
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).ToList();
+
+                }
+
+                else if (value.sortDirection == "asc")
+                {
+
+                    data = data.Where(
+                                       k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
+                                    ).ToList();
+                    
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
+
                 }
             }
 
-            //if(value.MasterType == "Engagement")
-            //{
+            if (value.MasterType == "Engagement Resource")
+            {
+                if (value.sortColumn == "" || value.sortDirection == "" || value.sortColumn == null)
+                {
 
-            //}
+                    data = data.Where(
+                                        k => (
+                                                (value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) 
+                                                || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower())
+                                                ||k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) 
+                                                || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
+                }
 
-            //if(value.MasterType == "Engagement Resource")
-            //{
+                else if (value.sortDirection == "desc")
+                {
 
-            //}
+                    data = data.Where(
+                                        k => (
+                                                (value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower())
+                                                || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower())
+                                                || k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())
+                                                || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
-            //if(value.MasterType == "Engagement Type")
-            //{
+                }
 
-            //}
-            return data;
+                else if (value.sortDirection == "asc")
+                {
+
+                    data = data.Where(
+                                       k => (
+                                               (value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower())
+                                               || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower())
+                                               || k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())
+                                               || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                    ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
+
+                }
+            }
+
+            if (value.MasterType == "Engagement Type")
+            {
+                if (value.sortColumn == "" || value.sortDirection == "" || value.sortColumn == null)
+                {
+
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())  : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
+                }
+
+                else if (value.sortDirection == "desc")
+                {
+
+                    data = data.Where(
+                                       k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                    ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
+
+                }
+
+                else if (value.sortDirection == "asc")
+                {
+
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
+                                     ).ToList();
+                    count = data.Count();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
+
+                }
+            }
+            response.count = count;
+            response.data = data;
+            return response;
         }
+
 
 
 
@@ -114,4 +228,13 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
             return data;
         }
     }
+
+    public class CapacityUtilizationReportResponse
+    {
+        public long count { get; set; }
+
+       public  dynamic data { get; set; }
+    }
 }
+
+

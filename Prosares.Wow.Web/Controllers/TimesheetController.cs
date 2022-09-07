@@ -21,18 +21,19 @@ namespace Prosares.Wow.Web.Controllers
 
 
         [HttpPost]
-        public JsonResponseModel GetAllTimeSheetPolicyDetails()
+        public JsonResponseModel GetAllTimeSheetPolicyDetails([FromBody] TimesheetPolicy timesheetPolicy)
         {
             JsonResponseModel apiResponse = new JsonResponseModel();
             try
             {
                 apiResponse.Status = ApiStatus.OK;
-                apiResponse.Data = _timeSheetPolicy.GetTimeSheetPolicy();
+                apiResponse.Data = _timeSheetPolicy.GetTimeSheetPolicy(timesheetPolicy);
                 apiResponse.Message = "Ok";
             }
             catch (System.Exception ex)
             {
                 apiResponse.Status = ApiStatus.Error;
+                
                 apiResponse.Data = null;
                 apiResponse.Message = ex.Message;
 

@@ -5,6 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Prosares.Wow.Data.Entities;
+using static Prosares.Wow.Data.Services.Customers.CustomerService;
+using System.Linq.Expressions;
+using Prosares.Wow.Data.Helpers;
 
 namespace Prosares.Wow.Data.Services.TimeSheetPolicy
 {
@@ -27,10 +30,48 @@ namespace Prosares.Wow.Data.Services.TimeSheetPolicy
 
 
         #region Methods
-        public dynamic GetTimeSheetPolicy()
+        public dynamic GetTimeSheetPolicy(Entities.TimesheetPolicy value)
         {
-            var data = from x in _timeSheet.Table
-                       select x;
+            var data = new TimesheetPolicyResponse();
+
+            Expression<Func<Entities.TimesheetPolicy, bool>> InitialCondition;
+            Expression<Func<Entities.TimesheetPolicy, bool>> SearchText;
+
+            InitialCondition = k => k.Id != 0;
+
+            if (value.searchText != null)
+            {
+
+                SearchText = k => k.Name.Contains(value.searchText);
+
+
+            }
+            else
+            {
+                SearchText = k => k.Name != "";
+            }
+
+            if (value.sortColumn == null || value.sortDirection == "")
+            {
+                //var demo = _timeSheet.Table.Where(InitialCondition).Where(SearchText).ToList();
+
+                data.count = _timeSheet.GetAll(b => b.Where(InitialCondition).Where(SearchText)).ToList().Count();
+                data.data = _timeSheet.GetAll(b => b.Where(InitialCondition).Where(SearchText).OrderByPropertyDescending("name")).Skip(value.start).Take(value.pageSize).ToList();
+            }
+
+            else if (value.sortDirection == "desc")
+            {
+                data.count = _timeSheet.GetAll(b => b.Where(InitialCondition).Where(SearchText)).ToList().Count();
+                data.data = _timeSheet.GetAll(b => b.Where(InitialCondition).Where(SearchText).OrderByPropertyDescending(value.sortColumn)).Skip(value.start).Take(value.pageSize).ToList();
+
+            }
+            else if (value.sortDirection == "asc")
+            {
+                data.count = _timeSheet.GetAll(b => b.Where(InitialCondition).Where(SearchText)).ToList().Count();
+                data.data = _timeSheet.GetAll(b => b.Where(InitialCondition).Where(SearchText).OrderByProperty(value.sortColumn)).Skip(value.start).Take(value.pageSize).ToList();
+
+            }
+  
             return data;
         }
 
@@ -102,5 +143,11 @@ namespace Prosares.Wow.Data.Services.TimeSheetPolicy
         //    }
         //}
         #endregion
+    }
+
+    public class TimesheetPolicyResponse
+    {
+        public long count { get; set; }
+        public dynamic data { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Prosares.Wow.Data.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,7 +9,7 @@ namespace Prosares.Wow.Data.Services.TimeSheetPolicy
 {
      public interface ITimeSheetPolicy
      {
-        public dynamic GetTimeSheetPolicy();
+        public dynamic GetTimeSheetPolicy(Entities.TimesheetPolicy value);
 
         public dynamic InsertUpdateTimesheet(Entities.TimesheetPolicy value);
 

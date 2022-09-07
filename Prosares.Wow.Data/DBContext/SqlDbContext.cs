@@ -188,8 +188,7 @@ namespace Prosares.Wow.Data.DBContext
                 entity.Ignore(e => e.FromDate);
                 entity.Ignore(e => e.ToDate);
 
-                entity.Ignore(e => e.Name);
-                entity.Ignore(e => e.Abbreviation);
+                entity.Ignore(e => e.count);
                 entity.Ignore(e => e.searchText);
                 entity.Ignore(e => e.pageSize);
                 entity.Ignore(e => e.start);
@@ -827,8 +826,15 @@ namespace Prosares.Wow.Data.DBContext
             {
                 entity.ToTable("TimesheetPolicy");
 
-                entity.Property(e => e.Id).HasColumnName("ID");
+                entity.Ignore(e=> e.sortColumn);
+                entity.Ignore(e => e.searchText);
+                entity.Ignore(e => e.sortDirection);
+                entity.Ignore(e => e.pageSize);
+                entity.Ignore(e => e.start);
+                entity.Ignore(e => e.count);
+                
 
+                entity.Property(e => e.Id).HasColumnName("ID");
                 entity.Property(e => e.CreatedDate)
                     .HasColumnType("datetime")
                     .HasDefaultValueSql("(getdate())");

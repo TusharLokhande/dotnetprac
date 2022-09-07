@@ -1,9 +1,10 @@
 import { TextField } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import { request } from "http";
+
 import moment from "moment";
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import DynamicGrid from "../../../Components/DynamicGrid/DynamicGrid";
 import SelectForm from "../../../Components/SelectForm/SelectForm";
 import { APICall } from "../../../Helpers/API/APICalls";
@@ -13,6 +14,7 @@ import {
   getCapacityUtilizationEngagementTypeOption,
   getCapacityAllocation,
 } from "../../../Helpers/API/APIEndPoints";
+import Master from "../Master";
 import "./CapacityUtilizationReport.css";
 
 const CapacityUtilizationReport = () => {
@@ -27,11 +29,11 @@ const CapacityUtilizationReport = () => {
     []
   );
   const [masterType, setMasterType] = useState({
-    value: "Engagement",
-    label: "Engagement",
-    id: 1,
+    value: "",
+    label: "Select Master Type",
+    id: 0,
   });
-  const [requestObject, setRequestObject] = useState([]);
+  const [requestObject, setRequestObject] = useState([{ count: 0 }]);
   const [gridType, setGridType] = useState([]);
   const [pageSize, setPageSize] = useState(10);
   const [start, setStart] = useState(0);
@@ -39,6 +41,9 @@ const CapacityUtilizationReport = () => {
   const [sortDirection, setSortDirection] = useState("");
   const [searchText, setSearchText] = useState("");
   const [count, setCount] = useState(0);
+  const [formErrors, setFormErrors] = useState({});
+  let navigate = useNavigate();
+  let formErrorObj = {};
 
   useEffect(() => {
     GetCustomerData();
@@ -61,11 +66,12 @@ const CapacityUtilizationReport = () => {
       sortColumn,
       sortDirection,
       searchText,
+      pageSize,
+      start,
+      count,
     };
-
     let s = Response(requestData, masterType);
-    console.log(requestData, s);
-  }, [sortDirection, sortColumn, searchText]);
+  }, [sortDirection, sortColumn, searchText, start, pageSize]);
 
   const masterTypeOptions = [
     { value: "Engagement", label: "Engagement", id: 1 },
@@ -130,51 +136,77 @@ const CapacityUtilizationReport = () => {
 
     if (apiField === "fromDate") {
       setFromDate(event);
-    }
 
+      if (event) {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["fromDate_isEmpty"]: undefined,
+        }));
+      } else {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["fromDate_isEmpty"]: "From date can not be empty",
+        }));
+      }
+    }
     if (apiField === "toDate") {
       setToDate(event);
+      if (event) {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["toDate_isEmpty"]: undefined,
+        }));
+      } else {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["toDate_isEmpty"]: " To date can not be empty",
+        }));
+      }
     }
 
     if (apiField === "masterType") {
       setMasterType(event);
-      console.log(event.value);
-      let customers = ConvertArrayToString(customerSelectData);
-      let engagements = ConvertArrayToString(engagementSelectedData);
-      let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
-
-      let requestData = {
-        MasterType: "",
-        Customers: customers,
-        Engagements: engagements,
-        EngagementTypes: engagementTypes,
-        FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-        ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
-      };
-
-      if (event.value === "Resource") {
-        requestData.MasterType = "Resource";
-        let s = Response(requestData, "Resource");
-        setGridType(gridColumns_Resource);
+      if (event) {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["master_Empty"]: undefined,
+        }));
+      } else {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["master_Empty"]: "Please select master type.",
+        }));
       }
+      // let customers = ConvertArrayToString(customerSelectData);
+      // let engagements = ConvertArrayToString(engagementSelectedData);
+      // let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
 
-      if (event.value === "Engagement") {
-        requestData.MasterType = "Engagement";
-        let s = Response(requestData, "");
-        setGridType(gridColumns_Engagement);
-      }
+      // let requestData = {
+      //   MasterType: "",
+      //   Customers: customers,
+      //   Engagements: engagements,
+      //   EngagementTypes: engagementTypes,
+      //   FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
+      //   ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+      //   pageSize,
+      //   start,
+      // };
 
-      if (event.value === "Engagement Resource") {
-        requestData.MasterType = "Engagement Resource";
-        let s = Response(requestData, "");
-        setGridType(gridColumns_EngagementResource);
-      }
+      // if (event.value === "Resource") {
+      //   setGridType(gridColumns_Resource);
+      // }
 
-      if (event.value === "Engagement Type") {
-        requestData.MasterType = "Engagement Type";
-        let s = Response(requestData, "");
-        setGridType(gridColumns_EngagementType);
-      }
+      // if (event.value === "Engagement") {
+      //   setGridType(gridColumns_Engagement);
+      // }
+
+      // if (event.value === "Engagement Resource") {
+      //   setGridType(gridColumns_EngagementResource);
+      // }
+
+      // if (event.value === "Engagement Type") {
+      //   setGridType(gridColumns_EngagementType);
+      // }
     }
   };
 
@@ -184,9 +216,96 @@ const CapacityUtilizationReport = () => {
     return s.join(",");
   };
 
+  const Validation = () => {
+    let objError = {};
+
+    if (fromDate == undefined || fromDate == null) {
+      objError["fromDate_isEmpty"] = "From date can not be empty";
+    }
+
+    if (toDate == undefined || toDate == null) {
+      objError["toDate_isEmpty"] = "Valid Till date can not be empty";
+    }
+
+    if (masterType.id === 0) {
+      objError["master_Empty"] = "Please select master type.";
+    }
+    formErrorObj = objError;
+    setFormErrors(objError);
+    const isEmpty = Object.keys(objError).length === 0;
+
+    return isEmpty;
+  };
+
   const Response = async (obj, api) => {
+    if (masterType.value === "Resource") {
+      setGridType(gridColumns_Resource);
+    }
+
+    if (masterType.value === "Engagement") {
+      setGridType(gridColumns_Engagement);
+    }
+
+    if (masterType.value === "Engagement Resource") {
+      setGridType(gridColumns_EngagementResource);
+    }
+
+    if (masterType.value === "Engagement Type") {
+      setGridType(gridColumns_EngagementType);
+    }
+
+    let x = { count: 0, data: [] };
+    console.log(x);
     const { data } = await APICall(getCapacityAllocation, "POST", obj);
-    setRequestObject(data);
+    x = { ...data };
+    console.log(x);
+    setRequestObject(x.data);
+    setCount(x.count);
+    return;
+  };
+
+  const submitFunc = async (field) => {
+    if (field === "submit") {
+      let customers = ConvertArrayToString(customerSelectData);
+      let engagements = ConvertArrayToString(engagementSelectedData);
+      let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
+
+      let requestData = {
+        MasterType: masterType.value,
+        Customers: customers,
+        Engagements: engagements,
+        EngagementTypes: engagementTypes,
+        FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
+        ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+        sortColumn,
+        sortDirection,
+        searchText,
+        pageSize,
+        start,
+        count,
+      };
+      const check = Validation();
+
+      if (check) {
+        Response(requestData, "");
+      }
+
+      return;
+    }
+
+    if (field === "reset") {
+      setFromDate(null);
+      setToDate(null);
+      setFormErrors({});
+      setCustomerSelectData([]);
+      setEngagementSelectedData([]);
+      setEngagementTypeSelectedData([]);
+      setMasterType({
+        value: "",
+        label: "Select Master Type",
+        id: 0,
+      });
+    }
   };
 
   const gridColumns_Resource = [
@@ -375,6 +494,7 @@ const CapacityUtilizationReport = () => {
       console.log(sortDirection, sortColumn);
     },
     onChangePage: async (page) => {
+      console.log(page);
       setStart(page * pageSize);
     },
   };
@@ -459,6 +579,7 @@ const CapacityUtilizationReport = () => {
                     />
                   </LocalizationProvider>
                 </div>
+                <p style={{ color: "red" }}>{formErrors["fromDate_isEmpty"]}</p>
               </div>
 
               <div className="col-lg-4 col-md-4 col-sm-6">
@@ -474,14 +595,18 @@ const CapacityUtilizationReport = () => {
                       )}
                     />
                   </LocalizationProvider>
+                  <p style={{ color: "red" }}>{formErrors["toDate_isEmpty"]}</p>
                 </div>
               </div>
 
               <div className="col-lg-4 col-md-4 col-sm-6">
+                <label>
+                  Select Type <sup style={{ color: "red" }}>*</sup>
+                </label>
                 <SelectForm
                   key={1}
                   options={masterTypeOptions}
-                  placeholder="Select Master Type"
+                  placeholder="Select Type"
                   isDisabled={false}
                   value={masterType}
                   onChange={(e) => SelectOnChange(e, "masterType")}
@@ -489,6 +614,33 @@ const CapacityUtilizationReport = () => {
                   noIndicator={false}
                   noSeparator={false}
                 />
+                <p style={{ color: "red" }}>{formErrors["master_Empty"]}</p>
+              </div>
+
+              <div
+                style={{ marginTop: "20px" }}
+                className="d-flex justify-content-end gap-2"
+              >
+                <button
+                  onClick={() => submitFunc("reset")}
+                  className="btn btn-reset ml-1"
+                  // disabled={state !== null ? true : false}
+                >
+                  Reset
+                </button>
+                <button
+                  style={{ background: "#96c61c" }}
+                  onClick={() => submitFunc("submit")}
+                  className="btn btn-save ml-1"
+                >
+                  Submit
+                </button>
+                <button
+                  onClick={() => navigate(-1)}
+                  className="btn btn-secondary"
+                >
+                  Back
+                </button>
               </div>
             </div>
           </div>
