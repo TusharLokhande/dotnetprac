@@ -10,6 +10,7 @@ namespace Prosares.Wow.Data.Services.Employee
 {
     public interface IEmployeeService
     {
+        public bool CheckFirstLogin(EmployeeMasterEntity emp);
         public dynamic ChangeEmployeePasswordByEmployeeId(EmployeeMasterEntity emp);
         public EmployeeMasterEntity GetEmployeeByLoginId(string LoginId);
         public EmployeeMasterEntity GetEmployeeByEmpId(long Eid);

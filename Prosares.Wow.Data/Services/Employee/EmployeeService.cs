@@ -83,56 +83,7 @@ namespace Prosares.Wow.Data.Services.Employee
             return data;
         }
 
-        public  dynamic ChangeEmployeePasswordByEmployeeId(EmployeeMasterEntity emp)
-        {
 
-            try
-            {
-                if(emp.CurrentPassword != null)
-                {
-                    bool checkPassword = _employeeMaster.Table.Any(k => k.Eid == emp.Eid && k.FirstLogin == true);
-                    if (checkPassword)
-                    {
-                        EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Eid == emp.Eid && x.IsActive == true)).FirstOrDefault();
-                        data.Password = emp.Password;
-                        data.FirstLogin = false;
-                        _employeeMaster.Update(data);
-                        return true;
-                    }
-                    return false;
-                }
-                else
-                {
-                    EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Eid == emp.Eid && x.IsActive == true)).FirstOrDefault();
-                    data.Password = emp.Password;
-                    _employeeMaster.Update(data);
-                    return true;
-                }
-
-            }
-            catch (Exception)
-            {
-                return false;
-                throw;
-            }
-
-        }
-
-
-        public dynamic CheckCurrentPasswordByEmployeeId(EmployeeMasterEntity emp)
-        {
-            var data = (from x in _employeeMaster.Table
-                        where x.Eid == emp.Eid && x.IsActive == true && x.Password == emp.Password
-                        select x
-                        );
-
-            if(data.ToList().Count > 0)
-            {
-                return true;
-            }
-
-            return false;
-        }
 
         public dynamic GetEmployeeRoleAndPermissions(long LoginId)
         {
@@ -456,6 +407,8 @@ namespace Prosares.Wow.Data.Services.Employee
             return new string(chars);
         }
 
+       
+
         public dynamic GetEmployeeReportingManager(EmployeeLeaveRequest value)
         {
             var data = _employeeReportingManagerMapping.Table.Where(k => k.EmployeeId == value.EmployeeId)
@@ -480,6 +433,77 @@ namespace Prosares.Wow.Data.Services.Employee
             return data;
         }
         #endregion
+
+
+        #region ChangePassword & Forgetpassword service 
+        public dynamic ChangeEmployeePasswordByEmployeeId(EmployeeMasterEntity emp)
+        {
+
+            try
+            {
+                if (emp.CurrentPassword != null)
+                {
+                    bool checkPassword = _employeeMaster.Table.Any(k => k.Eid == emp.Eid && k.Password == emp.CurrentPassword);
+                    if (checkPassword)
+                    {
+                        EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Eid == emp.Eid && x.IsActive == true)).FirstOrDefault();
+                        data.Password = emp.Password;
+                        data.FirstLogin = false;
+                        _employeeMaster.Update(data);
+                        return true;
+                    }
+                    return false;
+                }
+                else
+                {
+                    EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Eid == emp.Eid && x.IsActive == true)).FirstOrDefault();
+                    data.Password = emp.Password;
+                    _employeeMaster.Update(data);
+                    return true;
+                }
+
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+
+        }
+
+
+        public dynamic CheckCurrentPasswordByEmployeeId(EmployeeMasterEntity emp)
+        {
+            var data = (from x in _employeeMaster.Table
+                        where x.Eid == emp.Eid && x.IsActive == true && x.Password == emp.CurrentPassword
+                        select x
+                        );
+
+            if (data.ToList().Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
+        public bool CheckFirstLogin(EmployeeMasterEntity emp)
+        {
+            var data = (from x in _employeeMaster.Table
+                        where x.Eid == emp.Eid && x.FirstLogin == true
+                        select x
+                        ) ;
+
+            if (data.ToList().Count > 0)
+            {
+                return true;
+            }
+
+            return false;
+        }
+        #endregion
+
 
         #region Models
 

@@ -34,47 +34,57 @@ namespace MailEmail.Controllers
         }
 
         [HttpPost]
-        public Boolean Index(EmployeeMasterEntity model)
+        public int Index(EmployeeMasterEntity model)
         {
-
-            var data = (from x in _employeeMaster.Table
-                        where x.LoginId == model.Email
-                        select x);
-
-            var check = data.ToList().Count > 0;
-
-            string ShortName = "";
-            foreach (var item in data)
+            Prosares.Wow.Data.Models.JsonResponseModel response = new Prosares.Wow.Data.Models.JsonResponseModel();
+            try
             {
-                ShortName = item.ShortName;
+                var data = (from x in _employeeMaster.Table
+                            where x.LoginId == model.Email
+                            select x);
+
+                var check = data.ToList().Count > 0;
+
+                string ShortName = "";
+                foreach (var item in data)
+                {
+                    ShortName = item.ShortName;
+                }
+
+
+                if (check)
+                {
+                    string en = encrypt(model.Email);
+                    string email = model.Email;
+
+                    string url = $"{model.Url}/ResetPassword/forgetPassword?email={en}";
+                    string body = $"<p> Dear {ShortName},</ p > \r\n<p> we have received a request for password assistance for " +
+                        "for your Wow Account  </p> " +
+                        "<p> Please click the below to complete the process. </p>" +
+                          url +
+                        " <p>Thanks &amp; Regards,</p>"+
+                        "<p>(Note: This is a system generated message.)</p>";
+
+                    string subject = "WOW Password reset";
+                    Mail(body, email, subject);
+
+                   
+                    return 0;
+
+                }
+                else
+                {
+                    return 1;
+                }
+            }
+            catch (Exception)
+            {
+              
+                return 2;
             }
 
 
-            if (check)
-            {
-                string en = encrypt(model.Email);
-                string email = model.Email;
-
-                string url = $"{model.Url}/ResetPassword/forgetPassword?email={en}";
-                string body = $"<p> Dear {ShortName},</ p > \r\n<p> we have received a request for password assistance for " +
-                    "for your Wow Account  </p> " +
-                    "<p> Please click the below to complete the process. </p>" +
-                      url +
-                    " <p>Thanks &amp; Regards,</p>";
-
-                string subject = "WOW Password reset";
-                Mail(body, email, subject);
-                return false;
-
-
-            }
-            else
-            {
-                return true;
-            }
-
-
-            // return View();
+           
         }
 
         public static string encrypt(string password)
@@ -184,7 +194,9 @@ namespace MailEmail.Controllers
                 string email = emp.LoginId;
                 string body = $"<p>Dear {ShortName},</p> \r\n " +
                     "<p> Your password has been successfully reset </p>" +
-                    "<p>Thanks &amp; Regards,</p>";
+                    "<p>Thanks &amp; Regards,</p>"+"" +
+                    "<p>(Note: This is a system generated message.)</p>"
+                    ;
 
                 string subject = "Wow Password reseted successfully!";
                 Mail(body, email, subject);
