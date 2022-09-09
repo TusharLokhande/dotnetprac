@@ -44,7 +44,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
 
             var data = _capacity.GetRecords(command);
             var count = data.Count();
-
+            var report = _capacity.GetRecords(command);
             
             if (value.MasterType == "Resource")
             {
@@ -56,7 +56,9 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
+                    
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 } 
                 
@@ -66,6 +68,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
@@ -77,6 +80,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -92,6 +96,8 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())|| k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
                                      ).ToList();
+
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 }
@@ -102,6 +108,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).ToList();
 
@@ -113,7 +120,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
                                     ).ToList();
-                    
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -132,6 +139,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                                 ||k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) 
                                                 || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 }
@@ -146,6 +154,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                                 || k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())
                                                 || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
@@ -161,6 +170,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                                || k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())
                                                || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                     ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -175,6 +185,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())  : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 }
@@ -185,6 +196,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                     ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
@@ -196,6 +208,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
+                    report = data;
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -203,6 +216,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
             }
             response.count = count;
             response.data = data;
+            response.report = report;
             return response;
         }
 
@@ -233,7 +247,9 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
     {
         public long count { get; set; }
 
-       public  dynamic data { get; set; }
+        public  dynamic data { get; set; }
+
+        public dynamic report { get; set; }
     }
 }
 

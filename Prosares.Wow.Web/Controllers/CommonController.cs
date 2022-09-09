@@ -2,8 +2,10 @@
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
+using Prosares.Wow.Data.Entities;
 using Prosares.Wow.Data.Models;
 using Prosares.Wow.Data.Services.Application;
+using Prosares.Wow.Data.Services.CapacityUtilizationReport;
 using Prosares.Wow.Data.Services.CostCenterMaster;
 using Prosares.Wow.Data.Services.Customers;
 using Prosares.Wow.Data.Services.Employee;
@@ -15,6 +17,8 @@ using Prosares.Wow.Web.Controllers.Prosares.Wow.Data.Models;
 using System;
 using System.Drawing;
 using System.IO;
+using System.Linq;
+using static Microsoft.AspNetCore.Razor.Language.TagHelperMetadata;
 
 namespace Prosares.Wow.Web.Controllers
 {
@@ -30,6 +34,8 @@ namespace Prosares.Wow.Web.Controllers
         private readonly ICostCenterService _costCenterService;
         private readonly IMilestoneService _milestoneService;
         private readonly IEngagementMasterService _engagementService;
+        private readonly ICapacityUtilizationReport _capacityUtilizatonReport;
+
         public CommonController(IManagerDashboardService managerDashboardService,
             ICustomerService customerService,
         IApplicationService applicationService,
@@ -37,6 +43,7 @@ namespace Prosares.Wow.Web.Controllers
         IPhaseMasterService phaseMasterService,
         ICostCenterService costCenterService,
         IMilestoneService milestoneService,
+        ICapacityUtilizationReport capacityUtilizatonReport,
         IEngagementMasterService engagementMasterService)
         {
             _managerDashboardService = managerDashboardService;
@@ -47,6 +54,7 @@ namespace Prosares.Wow.Web.Controllers
             _costCenterService = costCenterService;
             _milestoneService = milestoneService;
             _engagementService = engagementMasterService;
+            _capacityUtilizatonReport = capacityUtilizatonReport;
         }
 
         [HttpPost]
@@ -485,7 +493,6 @@ namespace Prosares.Wow.Web.Controllers
         [HttpPost]
 
 
-
         public ActionResult ExportToExcel([FromBody] ManagerDashboardModel value)
         {
             try
@@ -742,6 +749,219 @@ namespace Prosares.Wow.Web.Controllers
                 xlPackage.Save();
             }
 
+        }
+
+        [HttpPost]
+
+        public dynamic CapacityUtilizatonReportExportToExcel([FromBody] CapacityUtilizationReport value)
+        {
+            CapacityUtilizationReportResponse x = new CapacityUtilizationReportResponse();
+            x = _capacityUtilizatonReport.GetCapacityAllocation(value);
+            var data = x.report;
+            byte[] dataBytes; 
+            MemoryStream ms = new MemoryStream();   
+            if (data == null)
+            {
+                throw new ArgumentNullException("stream");
+            }
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            using (var xlPackage = new ExcelPackage(ms))
+            {
+                var worksheet = xlPackage.Workbook.Worksheets.Add("Report");
+
+                var properties = Array.Empty<object>();
+                if (value.MasterType == "Resource")
+                {
+                    properties = new[]
+                    {
+                        "Resoucrce",
+                        "Type",
+                        "Mandays Planned",
+                        "Mandays Charged Actual",
+                        "Mandays Non-Charged Actual",
+                        "Mandays Leaves",
+                        "Variance"
+                    };
+                }
+                else if (value.MasterType == "Engagement")
+                {
+
+                    properties = new[]
+                    {
+                       "Customer",
+                       "Engagement",
+                       "Type",
+                       "Mandays Planned",
+                       "Mandays Actual",
+                       "Variance",
+                       "Non-Charged",
+                       "PO Mandays",
+                       "Budget Mandays",
+                       "PO Value",
+                       "PO Status",
+                    };
+                }
+                else if (value.MasterType == "Engagement Resource")
+                {
+
+                    properties = new[]
+                    {
+                        "Customer",
+                        "Engagement",
+                        "Type",
+                        "Resource", "Mandays Planned", "Mandays Actual","Variance",
+                        "PO Mandays","Total Spent Mandays", "Balance Mandays"
+                    };
+                }
+                else if (value.MasterType == "Engagement Type")
+                {
+
+                    properties = new[]
+                    {
+                        "Engagement Type",
+                        "Mandays Planned",
+                        "Mandays Charged Actual",
+                        "Mandays Non-Charged Actual",
+                        "Variance"
+                    };
+                }
+                
+               
+
+                for (int i = 0; i < properties.Length; i++)
+                {
+
+                    worksheet.Cells[1, i + 1].Value = properties[i];
+
+                    //Bold Text
+                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+
+                    //Border
+                    worksheet.Cells[1, i + 1].Style.Border.Top.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[1, i + 1].Style.Border.Bottom.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[1, i + 1].Style.Border.Left.Style = ExcelBorderStyle.Thin;
+                    worksheet.Cells[1, i + 1].Style.Border.Right.Style = ExcelBorderStyle.Thin;
+
+                    //Border Color
+                    worksheet.Cells[1, i + 1].Style.Border.Top.Color.SetColor(Color.Black);
+                    worksheet.Cells[1, i + 1].Style.Border.Bottom.Color.SetColor(Color.Black);
+                    worksheet.Cells[1, i + 1].Style.Border.Right.Color.SetColor(Color.Black);
+                    worksheet.Cells[1, i + 1].Style.Border.Left.Color.SetColor(Color.Black);
+
+                    //center alignment of text
+                    worksheet.Cells[1, i + 1].Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
+                    worksheet.Cells[1, i + 1].Style.VerticalAlignment = ExcelVerticalAlignment.Center;
+
+                    //Set Font Size
+                    worksheet.Cells[1, i + 1].Style.Font.Size = 12;
+                }
+                int row = 2;
+
+                foreach (var item in data)
+                {
+                    if (value.MasterType == "Resource")
+                    {
+                        int col = 1;
+                        worksheet.Cells[row, col].Value = item.Resource;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.EngagementType;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysPlanned;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.NonCharged;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysLeaves;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Variance;
+                        col++;
+                    }
+
+                    else if (value.MasterType == "Engagement")
+                    {
+                        int col = 1;
+                        worksheet.Cells[row, col].Value = item.Customer;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Engagement;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.EngagementType;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysPlanned;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Variance;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.NonCharged;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.POManDays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.BudgetMandays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.TotalspendMandays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.BalanceMandays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.POValue;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.POStatus;
+                        col++;
+                    }
+                    else if (value.MasterType == "Engagement Resource")
+                    {
+                        int col = 1;
+                        worksheet.Cells[row, col].Value = item.Customer;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Engagement;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.EngagementType;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Resource;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysPlanned;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Variance;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.POManDays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.BudgetMandays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.TotalspendMandays;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.BalanceMandays;
+                        col++;
+
+                    }
+
+                    else if (value.MasterType == "Engagement Resource")
+                    {
+                        int col = 1;
+                      
+                        worksheet.Cells[row, col].Value = item.EngagementType;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysPlanned;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.NonCharged;
+                        col++;
+                        worksheet.Cells[row, col].Value = item.Variance;
+                        col++;
+                    }
+                }
+                worksheet.Cells.AutoFitColumns();
+
+                xlPackage.Save();
+                dataBytes = ms.ToArray();
+
+            }
+            return File(dataBytes, "text/xls", "" + value.MasterType + "" + DateTime.Now.ToString() + ".xlsx");
+
+            
+           
         }
     }
 }

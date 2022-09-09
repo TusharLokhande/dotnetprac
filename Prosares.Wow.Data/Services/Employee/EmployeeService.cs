@@ -475,7 +475,7 @@ namespace Prosares.Wow.Data.Services.Employee
         public dynamic CheckCurrentPasswordByEmployeeId(EmployeeMasterEntity emp)
         {
             var data = (from x in _employeeMaster.Table
-                        where x.Eid == emp.Eid && x.IsActive == true && x.Password == emp.CurrentPassword
+                        where x.Id == emp.Id  && x.Password == emp.CurrentPassword
                         select x
                         );
 
@@ -488,19 +488,11 @@ namespace Prosares.Wow.Data.Services.Employee
         }
 
 
-        public bool CheckFirstLogin(EmployeeMasterEntity emp)
+        public EmployeeMasterEntity CheckFirstLogin(long Id)
         {
-            var data = (from x in _employeeMaster.Table
-                        where x.Eid == emp.Eid && x.FirstLogin == true
-                        select x
-                        ) ;
+            EmployeeMasterEntity data = _employeeMaster.Table.Where(k => k.Id == Id).FirstOrDefault();
 
-            if (data.ToList().Count > 0)
-            {
-                return true;
-            }
-
-            return false;
+            return data;
         }
         #endregion
 

@@ -20,16 +20,16 @@ namespace WowLoginModule.Controllers
             return View();
         }
 
-        public IActionResult ChangePassword(EmployeeMasterEntity? obj)
+        [Route("/ChangePassword")]
+        public IActionResult ChangePassword(long id)
         {
-            obj.Eid = 100;
-
-            bool check = _employeeService.CheckFirstLogin(obj);
-            if (check)
+            EmployeeMasterEntity data = new EmployeeMasterEntity();
+            data = _employeeService.CheckFirstLogin(id);
+            if (id == 0)
             {
-                obj.FirstLogin = true;
+                data.FirstLogin = true;
             }
-            return View(obj);
+            return View(data);
         }
 
 
@@ -37,7 +37,7 @@ namespace WowLoginModule.Controllers
        public bool ChangePasswordResponse(EmployeeMasterEntity emp)
        {
 
-            emp.Eid = 100;
+          
            
             bool data = _employeeService.ChangeEmployeePasswordByEmployeeId(emp);
             if (data)
@@ -50,9 +50,8 @@ namespace WowLoginModule.Controllers
 
         [HttpPost]
         public bool CheckCurrentPassword(EmployeeMasterEntity emp)
-        {
-            emp.Eid = 100;
-            bool check = _employeeService.CheckCurrentPasswordByEmployeeId(emp);
+        { 
+            var check = _employeeService.CheckCurrentPasswordByEmployeeId(emp);
             return check;
         }
 

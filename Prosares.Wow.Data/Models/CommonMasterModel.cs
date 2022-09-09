@@ -8,6 +8,7 @@
             public string? sortColumn { get; set; }
             public string? sortDirection { get; set; }
             public string? searchText { get; set; }
+
         }
     }
 }

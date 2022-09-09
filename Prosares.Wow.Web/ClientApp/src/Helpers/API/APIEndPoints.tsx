@@ -168,3 +168,5 @@ export const getCapacityUtilizationEngagementTypeOption = `${url}/api/CapacityUt
 export const getCapacityUtilizationEngagement = `${url}/api/CapacityUtilizationReport/GetEngagement`;
 
 export const getCapacityAllocation = `${url}/api/CapacityUtilizationReport/GetCapacityAllocation`;
+
+export const CapacityUtilizationReportExportToExcel = `${url}/api/Common/CapacityUtilizatonReportExportToExcel`;

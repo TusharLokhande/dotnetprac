@@ -1,6 +1,8 @@
-import { TextField } from "@mui/material";
+import { TextField, Tooltip } from "@mui/material";
 import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import axios from "axios";
+import fileDownload from "js-file-download";
 
 import moment from "moment";
 import React, { useState, useEffect } from "react";
@@ -13,6 +15,7 @@ import {
   getCapacityUtilizationEngagement,
   getCapacityUtilizationEngagementTypeOption,
   getCapacityAllocation,
+  CapacityUtilizationReportExportToExcel,
 } from "../../../Helpers/API/APIEndPoints";
 import Master from "../Master";
 import "./CapacityUtilizationReport.css";
@@ -306,6 +309,51 @@ const CapacityUtilizationReport = () => {
         id: 0,
       });
     }
+  };
+
+  const ExportToExcel = () => {
+    let customers = ConvertArrayToString(customerSelectData);
+    let engagements = ConvertArrayToString(engagementSelectedData);
+    let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
+    const obj = {
+      MasterType: masterType.value,
+      Customers: customers,
+      Engagements: engagements,
+      EngagementTypes: engagementTypes,
+      FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
+      ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+      sortColumn,
+      sortDirection,
+      searchText,
+      pageSize,
+      start: 0,
+      count,
+    };
+    // const data = APICall(CapacityUtilizationReportExportToExcel, "POST", obj);
+    // console.log(data);
+    axios
+      .request({
+        responseType: "blob",
+        method: "POST",
+
+        //data: Response,
+        url: CapacityUtilizationReportExportToExcel,
+        //data:JSON,
+        headers: {
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Headers": "*",
+        },
+        data: obj,
+      })
+      .then((response) => {
+        console.log(response);
+
+        fileDownload(response.data, "CapacityUtilizationReport.xlsx");
+      })
+      .catch((error) => {
+        console.log(error.response.data);
+      });
   };
 
   const gridColumns_Resource = [
@@ -621,6 +669,14 @@ const CapacityUtilizationReport = () => {
                 style={{ marginTop: "20px" }}
                 className="d-flex justify-content-end gap-2"
               >
+                <Tooltip title="Export to excel">
+                  <button
+                    onClick={() => ExportToExcel()}
+                    className="btn btn-secondary mr-2"
+                  >
+                    <i className="fa-solid fa-file-arrow-down"></i>
+                  </button>
+                </Tooltip>
                 <button
                   onClick={() => submitFunc("reset")}
                   className="btn btn-reset ml-1"

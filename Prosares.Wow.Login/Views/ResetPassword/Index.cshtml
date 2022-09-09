@@ -6,49 +6,46 @@
 
 
 <style>
-    .toast {
-        position: relative;
-        margin: 0 auto;
-        text-align: left;
-        clear: left;
-        height: auto;
-        z-index: 2;
-        font-weight: 200;
+    #notif, #notif_err {
+        position: absolute;
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+        align-items: center;
+        top: 100px;
     }
 
-    .toast-header {
-     
+    .email_form{
+        margin-top: 100px;
     }
 </style>
 
-<div  style="display: flex; align-items: center; justify-content: center;">
-
-    <div  role="alert" aria-live="assertive" aria-atomic="true" id="toast_success" class="toast" data-autohide="false">
-        <div class="toast-header">
-
-            <strong class="mr-auto">
-                <span>&#10003;</span>
-            </strong>
-
-            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close">
+    <div class="d-flex justify-content-center align-items-center my-4 position-relative">
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="notif">
+            <i class="fa fa-check-circle" style="font-size:22px;color:green"></i>
+            <span> Mail sent succesfully</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
             </button>
         </div>
-        <div class="toast-body">
-            <strong>  Your password has been reset successfully </strong>
+
+    <div class="alert alert-danger alert-dismissible fade show" role="alert" id="notif_err">
+            <i class="fa fa-times-circle-o" style="font-size:22px;color:red"></i>
+            <span> Something went wrong!</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
         </div>
     </div>
-</div>
 
-
-<div class="text-center">
+    <div class="text-center">
   
     <div class="container mt-5 mb-5 d-flex justify-content-center">
         <div class="card px-1 py-4 form_container">
             <div class="card-body">
                 <div class="row">
                     <div class="col-sm-12">
-                        <div class="form-group">
+                        <div class="form-group email_form">
                             <div class="input-group">
                                 <input class="form-control" id="email" type="text" placeholder="Email ID">
                             </div>
@@ -79,10 +76,13 @@
 
 <script>
     $(document).ready(() => {
+
         $("#valid").hide();
         $("#mailSent").hide();
         $("#empty_email").hide();
-        let validation = [];
+        $("#notif").hide();
+        $("#notif_err").hide();
+       
     })
 
     $(".close").click(() => {
@@ -115,17 +115,23 @@
                     console.log(data, typeof data);
 
                     if (data == 0 || data == '0') {
-                        $("#toast_success").toast('show');
+                        $("#notif").show();
                         setTimeout(function () {
-                            $("#toast_success").toast('hide');
+                            $("#notif").hide();
                         }, 5000);
                         $("#email").val("");
+
+
                     }
                     else if (data == 1 || data == '1'){
                       $("#valid").show();
                     }
                     else {
                         console.log('Something went wrong')
+                        $("#notif_err").show();
+                        setTimeout(function () {
+                            $("#notif_err").hide();
+                        }, 5000);
                     }
                    
                 }

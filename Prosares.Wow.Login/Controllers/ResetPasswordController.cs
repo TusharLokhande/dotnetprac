@@ -57,7 +57,7 @@ namespace MailEmail.Controllers
                     string en = encrypt(model.Email);
                     string email = model.Email;
 
-                    string url = $"{model.Url}/ResetPassword/forgetPassword?email={en}";
+                    string url = $"{model.Url}/ForgetPassword?email={en}";
                     string body = $"<p> Dear {ShortName},</ p > \r\n<p> we have received a request for password assistance for " +
                         "for your Wow Account  </p> " +
                         "<p> Please click the below to complete the process. </p>" +
@@ -140,7 +140,7 @@ namespace MailEmail.Controllers
             MailDetails.Subject = sbTemplateSubject.ToString();
             var returnValue = _mailService.SendMail(MailDetails);
         }
-
+        [Route("/ForgetPassword")]
         public IActionResult ForgetPassword(string email)
         {
             string LoginEmail = Decrypt(email);
