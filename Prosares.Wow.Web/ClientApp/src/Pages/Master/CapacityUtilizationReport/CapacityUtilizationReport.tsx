@@ -96,6 +96,8 @@ const CapacityUtilizationReport = () => {
       options.push({ value: item.name, label: item.name, id: item.id });
     });
 
+    options.sort((a, b) => a.value.localeCompare(b.value));
+
     setCustomerOptions(options);
   };
 
@@ -106,6 +108,7 @@ const CapacityUtilizationReport = () => {
     data.map((item, index) => {
       options.push({ value: item.name, label: item.name, id: item.id });
     });
+    options.sort((a, b) => a.value.localeCompare(b.value));
     setEngagementOptions(options);
   };
 
@@ -120,6 +123,7 @@ const CapacityUtilizationReport = () => {
     data.map((item, index) => {
       options.push({ value: item.name, label: item.name, id: item.id });
     });
+    options.sort((a, b) => a.value.localeCompare(b.value));
     setEngagementTypeOptions(options);
   };
 
@@ -329,31 +333,34 @@ const CapacityUtilizationReport = () => {
       start: 0,
       count,
     };
-    // const data = APICall(CapacityUtilizationReportExportToExcel, "POST", obj);
-    // console.log(data);
-    axios
-      .request({
-        responseType: "blob",
-        method: "POST",
 
-        //data: Response,
-        url: CapacityUtilizationReportExportToExcel,
-        //data:JSON,
-        headers: {
-          "Access-Control-Allow-Origin": "*",
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Headers": "*",
-        },
-        data: obj,
-      })
-      .then((response) => {
-        console.log(response);
+    const check = Validation();
 
-        fileDownload(response.data, "CapacityUtilizationReport.xlsx");
-      })
-      .catch((error) => {
-        console.log(error.response.data);
-      });
+    if (check) {
+      axios
+        .request({
+          responseType: "blob",
+          method: "POST",
+
+          //data: Response,
+          url: CapacityUtilizationReportExportToExcel,
+          //data:JSON,
+          headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Headers": "*",
+          },
+          data: obj,
+        })
+        .then((response) => {
+          console.log(response);
+
+          fileDownload(response.data, "CapacityUtilizationReport.xlsx");
+        })
+        .catch((error) => {
+          console.log(error.response.data);
+        });
+    }
   };
 
   const gridColumns_Resource = [
@@ -375,6 +382,11 @@ const CapacityUtilizationReport = () => {
     {
       name: "mandaysActual",
       label: "Mandays Actual",
+      options: {},
+    },
+    {
+      name: "nonCharged",
+      label: "Mandays Non-Charged Actual",
       options: {},
     },
     {
@@ -435,7 +447,7 @@ const CapacityUtilizationReport = () => {
     },
     {
       name: "poStatus",
-      label: "PO Value",
+      label: "PO Status",
     },
   ];
 
@@ -483,6 +495,11 @@ const CapacityUtilizationReport = () => {
     {
       name: "mandaysPlanned",
       label: "Mandays Planned",
+    },
+    {
+      name: "mandaysActual",
+      label: "Mandays Actual",
+      options: {},
     },
     {
       name: "mandaysActual",
@@ -638,6 +655,7 @@ const CapacityUtilizationReport = () => {
                       value={toDate}
                       onChange={(e) => SelectOnChange(e, "toDate")}
                       inputFormat="dd/MM/yyyy"
+                      minDate={fromDate}
                       renderInput={(params) => (
                         <TextField size="small" required {...params} />
                       )}

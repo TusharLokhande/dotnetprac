@@ -443,10 +443,10 @@ namespace Prosares.Wow.Data.Services.Employee
             {
                 if (emp.CurrentPassword != null)
                 {
-                    bool checkPassword = _employeeMaster.Table.Any(k => k.Eid == emp.Eid && k.Password == emp.CurrentPassword);
+                    bool checkPassword = _employeeMaster.Table.Any(k => k.Id == emp.Id && k.Password == emp.CurrentPassword);
                     if (checkPassword)
                     {
-                        EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Eid == emp.Eid && x.IsActive == true)).FirstOrDefault();
+                        EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Id == emp.Id && x.IsActive == true)).FirstOrDefault();
                         data.Password = emp.Password;
                         data.FirstLogin = false;
                         _employeeMaster.Update(data);
@@ -456,8 +456,9 @@ namespace Prosares.Wow.Data.Services.Employee
                 }
                 else
                 {
-                    EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Eid == emp.Eid && x.IsActive == true)).FirstOrDefault();
+                    EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Id == emp.Id && x.IsActive == true)).FirstOrDefault();
                     data.Password = emp.Password;
+                    emp.FirstLogin = false;
                     _employeeMaster.Update(data);
                     return true;
                 }

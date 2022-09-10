@@ -9,7 +9,7 @@ Login.Authenticate = function () {
     var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
     var eTest = regex.test(email);
     $("#lgn-usvalid").show();
-    debugger
+    
     if ($("#loginform").valid() && eTest) {
         debugger
         var UserName1 = $("#lgn-usrnm").val();
@@ -51,8 +51,16 @@ Login.Authenticate = function () {
                             $("#myModalLabel").html('<p>Login Success</p>');
                             //$("#login-modal-popup").modal("toggle");
 
+                            //if first login is true then redirect to changepassword page. firstLogin
+                            debugger;
+                            if (res.data.firstLogin == true) {
+                                Login.ChangePassword(Login.UID);
+                            } else {
+                                console.log(res)
+                            }
+
                             //redirect to defualt module
-                            Login.Redirect();
+                            // Login.Redirect();
                         }
                     }
                     else if (res.data.status == false) {
@@ -113,4 +121,8 @@ Login.Redirect = function () {
 
    // window.location.href = "http://192.168.0.61:8081/Dashboard";
 
+}
+
+Login.ChangePassword = (id) => {
+    window.location.href = `/ChangePassword?id=${id}`;
 }

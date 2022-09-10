@@ -33,7 +33,7 @@ namespace WowLoginModule.Controllers
             return View();
         }
 
-        [Microsoft.AspNetCore.Mvc.HttpPost] 
+        [Microsoft.AspNetCore.Mvc.HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginModel login)
         {
 
@@ -42,30 +42,43 @@ namespace WowLoginModule.Controllers
             {
                 EmployeeMasterEntity employee = _employeeService.GetEmployeeByLoginId(login.UserName);
 
-                // if (login.Password == _cryptoService.Decrypt(userdata.Password))
-                 if (login.Password == employee.Password)
-                 {
-                    
-                    var RolesAndPermissions = _employeeService.GetEmployeeRoleAndPermissions(employee.Id);
-                    var token = _JwtAuthentication.GenerateJSONWebToken(employee, RolesAndPermissions);
-                    var token2 = EncryptionDecryption.EncryptString(token);
+                
+                    // if (login.Password == _cryptoService.Decrypt(userdata.Password))
+                    if (login.Password == employee.Password)
+                    {
+
+                        var RolesAndPermissions = _employeeService.GetEmployeeRoleAndPermissions(employee.Id);
+                        var token = _JwtAuthentication.GenerateJSONWebToken(employee, RolesAndPermissions);
+                        var token2 = EncryptionDecryption.EncryptString(token);
+                        jsonResponse.Status = ApiStatus.OK;
+                        jsonResponse.Data = new { Status = true, UID = employee.Id, token = token };
+
+                        //adding cookie
+                        Response.Cookies.Delete("ApplicationToken");
+                        CookieOptions option = new CookieOptions();
+                        option.Expires = DateTime.Now.AddDays(10);
+
+                        Response.Cookies.Append("ApplicationToken", token, option);
+
+                        jsonResponse.Message = "Authentication Successful";
+
+                        if (employee.FirstLogin)
+                        {          
+                            jsonResponse.Data = new { Status = true, UID = employee.Id, token, FirstLogin = true};
+                        }
+                        else
+                        {
+                            jsonResponse.Data = new { Status = true, UID = employee.Id, token, FirstLogin = false };
+                        }
+                        
+                        return Json(jsonResponse);
+                    }
+
                     jsonResponse.Status = ApiStatus.OK;
-                    jsonResponse.Data = new { Status = true ,UID = employee.Id, token = token };
+                    jsonResponse.Data = new { Status = false };
+                    jsonResponse.Message = "Authentication Failed";
+                
 
-                    //adding cookie
-                    Response.Cookies.Delete("ApplicationToken");
-                    CookieOptions option = new CookieOptions();
-                    option.Expires = DateTime.Now.AddDays(10);
-                    
-                    Response.Cookies.Append("ApplicationToken", token, option);
-
-                    jsonResponse.Message = "Authentication Successful";
-                    return Json(jsonResponse);
-                 }
-
-                jsonResponse.Status = ApiStatus.OK;
-                jsonResponse.Data = new { Status = false };
-                jsonResponse.Message = "Authentication Failed";
             }
             catch (Exception ex)
             {
@@ -73,6 +86,7 @@ namespace WowLoginModule.Controllers
                 jsonResponse.Data = new { Status = false };
                 jsonResponse.Message = "Authentication Failed";
             }
+        
             return Ok(jsonResponse);
         }
 

@@ -797,6 +797,8 @@ namespace Prosares.Wow.Web.Controllers
                        "Non-Charged",
                        "PO Mandays",
                        "Budget Mandays",
+                       "Total Spend Mandyas",
+                       "Balanced Mandays",
                        "PO Value",
                        "PO Status",
                     };
@@ -903,6 +905,7 @@ namespace Prosares.Wow.Web.Controllers
                         col++;
                         worksheet.Cells[row, col].Value = item.BalanceMandays;
                         col++;
+
                         worksheet.Cells[row, col].Value = item.POValue;
                         col++;
                         worksheet.Cells[row, col].Value = item.POStatus;
@@ -933,6 +936,8 @@ namespace Prosares.Wow.Web.Controllers
                         col++;
                         worksheet.Cells[row, col].Value = item.BalanceMandays;
                         col++;
+                        worksheet.Cells[row, col].Value = item.BalanceMandays;
+                        col++;
 
                     }
 
@@ -951,6 +956,7 @@ namespace Prosares.Wow.Web.Controllers
                         worksheet.Cells[row, col].Value = item.Variance;
                         col++;
                     }
+                    row++;
                 }
                 worksheet.Cells.AutoFitColumns();
 
