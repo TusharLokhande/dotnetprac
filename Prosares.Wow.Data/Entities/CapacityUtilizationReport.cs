@@ -18,7 +18,7 @@ namespace Prosares.Wow.Data.Entities
 
         public float POValue { get; set; }
 
-        public bool POStatus { get; set; }
+        public long POStatus { get; set; }
         public DateTime FromDate { get; set; }
         public DateTime ToDate { get; set; }
         public string Customers { get; set; }

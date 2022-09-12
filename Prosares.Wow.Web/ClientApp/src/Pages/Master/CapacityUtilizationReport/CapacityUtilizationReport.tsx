@@ -448,6 +448,17 @@ const CapacityUtilizationReport = () => {
     {
       name: "poStatus",
       label: "PO Status",
+      customBodyRender: (value, tableMeta) => {
+        if (value) {
+          let label = "";
+          // enagagementTypeOptions.map((ele: any) => {
+          //   if (ele.value === Number(value)) {
+          //     label = ele.label;
+          //   }
+          // });
+          return label;
+        }
+      },
     },
   ];
 

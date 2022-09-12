@@ -458,7 +458,7 @@ namespace Prosares.Wow.Data.Services.Employee
                 {
                     EmployeeMasterEntity data = _employeeMaster.Get(k => k.Where(x => x.Id == emp.Id && x.IsActive == true)).FirstOrDefault();
                     data.Password = emp.Password;
-                    emp.FirstLogin = false;
+                    data.FirstLogin = false;
                     _employeeMaster.Update(data);
                     return true;
                 }

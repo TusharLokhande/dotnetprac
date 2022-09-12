@@ -56,7 +56,7 @@ Login.Authenticate = function () {
                             if (res.data.firstLogin == true) {
                                 Login.ChangePassword(Login.UID);
                             } else {
-                                console.log(res)
+                                Login.Redirect();
                             }
 
                             //redirect to defualt module
