@@ -347,6 +347,15 @@ namespace Prosares.Wow.Data.Services.LeaveRequest
 
             data.Id = value.Id;
 
+            if(value.FromDate.Date ==DateTime.Now.Date)
+            {
+                value.IsPlanned = false;
+            }
+            else
+            {
+                value.IsPlanned = true;
+            }
+
             if (value.Id == 0) // Insert in DB
             {
                 // join all fyi userIds to store in db
@@ -362,7 +371,7 @@ namespace Prosares.Wow.Data.Services.LeaveRequest
                 string fyiUsersEmailIds = string.Empty;
                 foreach (var item in value.FYIUsersList)
                 {
-                    string emailID = _employeeMaster.Table.Where(k => k.IsActive == true && k.Id == item.Value).Select(s => s.LoginId).FirstOrDefault();
+                    string emailID = _employeeMaster.Table.Where(k => k.IsActive == true && k.Id == item.Value).Select(s => s.LoginId).ToString();
                     fyiUsersList.Add(emailID);
                 }
                 fyiUsersEmailIds = string.Join(",", fyiUsersList);

@@ -1,5 +1,8 @@
 ﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Prosares.Wow.Data.DBContext;
 using Prosares.Wow.Data.Entities;
 using Prosares.Wow.Data.Helpers;
 using Prosares.Wow.Data.Repository;
@@ -17,12 +20,15 @@ namespace Prosares.Wow.Data.Services.CapicityAllocation
         private readonly IRepository<CapacityAllocation> _capicityAllocationMaster;
         private readonly IRepository<Entities.EngagementMaster> _engagementMaster;
         private readonly ILogger<CapicityAllocationService> _logger;
+        private readonly SqlDbContext _context;
         #endregion
 
         #region Constructor
         public CapicityAllocationService(IRepository<CapacityAllocation> CapicityAllocationMaster,
                         ILogger<CapicityAllocationService> logger,
-                        IRepository<Entities.EngagementMaster> EngagementMaster)
+                        IRepository<Entities.EngagementMaster> EngagementMaster,
+                        SqlDbContext context
+            )
         {
             _capicityAllocationMaster = CapicityAllocationMaster;
             _engagementMaster = EngagementMaster;
@@ -147,12 +153,30 @@ namespace Prosares.Wow.Data.Services.CapicityAllocation
                 throw;
             }
         }
+
+
+        public dynamic GetWorkdays(CapacityAllocation value)
+        {
+            SqlCommand cmd = new SqlCommand("sp_TMcapacityallocation");
+            cmd.CommandType = CommandType.StoredProcedure;
+            cmd.Parameters.Add("@startdate", SqlDbType.Date).Value = value.FromDate;
+            cmd.Parameters.Add("@enddate", SqlDbType.Date).Value = value.ToDate;
+            cmd.Parameters.Add("@Id", SqlDbType.Int).Value = value.EmployeeId;
+
+
+            CapacityAllocation data = _capicityAllocationMaster.GetRecord(cmd);
+            return data.Mandays;
+        }
+
+
         public dynamic InsertUpdateCapacityAllocation(CapacityAllocation value)
         {
             try
             {
                 CapacityAllocation data = new CapacityAllocation();
                 data.Id = value.Id;
+
+
                 if (value.Id == 0) // Insert in DB
                 {
                     value.CreatedDate = DateTime.UtcNow;

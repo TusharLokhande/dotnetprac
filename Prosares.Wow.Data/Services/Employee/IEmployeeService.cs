@@ -24,6 +24,7 @@ namespace Prosares.Wow.Data.Services.Employee
 
         public dynamic CheckCurrentPasswordByEmployeeId(EmployeeMasterEntity emp);
 
+        public dynamic SaiExportToExcel(EmployeeMasterEntity value);
 
     }
 }

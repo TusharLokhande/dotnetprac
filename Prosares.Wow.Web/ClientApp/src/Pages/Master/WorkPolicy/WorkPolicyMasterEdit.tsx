@@ -430,13 +430,15 @@ const WorkPolicyMasterEdit = () => {
           <div className="d-flex justify-content-end gap-2">
             <button
               onClick={() => onClickFunction("reset")}
-              className="btn btn-reset ml-1">
+              className="btn btn-reset ml-1"
+            >
               Reset
             </button>
             <button
               style={{ background: "#96c61c" }}
               onClick={() => onClickFunction("submit")}
-              className="btn btn-save ml-1">
+              className="btn btn-save ml-1"
+            >
               Submit
             </button>
             <button onClick={() => navigate(-1)} className="btn btn-secondary">

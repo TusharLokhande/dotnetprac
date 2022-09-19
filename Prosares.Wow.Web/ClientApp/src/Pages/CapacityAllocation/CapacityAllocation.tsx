@@ -142,23 +142,23 @@ const CapacityAllocation = (props: any) => {
       name: "mandays",
       label: "Mandays",
       options: {
-        display:
-          props.type === "PROJECT" || props.type === "AMC" ? true : false,
+        // display:
+        //   props.type === "PROJECT" || props.type === "AMC" ? true : false,
         filter: false,
         sort: true,
         sortDescFirst: true,
       },
     },
-    {
-      name: "fractionAllocated",
-      label: "Fraction",
-      options: {
-        display: props.type === "T&M" ? true : false,
-        filter: false,
-        sort: true,
-        sortDescFirst: true,
-      },
-    },
+    // {
+    //   name: "fractionAllocated",
+    //   label: "Fraction",
+    //   options: {
+    //      display: props.type === "T&M" ? true : false,
+    //     filter: false,
+    //     sort: true,
+    //     sortDescFirst: true,
+    //   },
+    // },
     // {
     //   name: "isActive",
     //   label: "Active",
@@ -565,6 +565,7 @@ const CapacityAllocation = (props: any) => {
         setResourceAllocated({});
         setFromDate(firstDay);
         setToDate(lastDay);
+        setMandaysAllocated("");
       }
       if (
         engagement &&
@@ -586,7 +587,8 @@ const CapacityAllocation = (props: any) => {
         lastDay &&
         props.type === "T&M"
       ) {
-        await getAllocatedResourcesPerMonthEdit(
+        //await getAllocatedResourcesPerMonthEdit(
+        await getAllocatedMandaysPerMonthEdit(
           engagement.engagementId,
           moment(firstDay).format(moment.HTML5_FMT.DATE),
           moment(lastDay).format(moment.HTML5_FMT.DATE)
@@ -677,7 +679,7 @@ const CapacityAllocation = (props: any) => {
       formErrorObj["resourceAllocated_isEmpty"] =
         "Resource allocated can not be empty";
     }
-    if (props.type === "T&M") {
+    if (props.type === "") {
       if (
         typeof fractionAllocated === "string" &&
         (!fractionAllocated || fractionAllocated.toString().trim() === "")
@@ -715,7 +717,7 @@ const CapacityAllocation = (props: any) => {
         fromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
         toDate: moment(toDate).format(moment.HTML5_FMT.DATE),
         employeeId: resourceAllocated.value,
-        fractionAllocated: Number(fractionAllocated), //fractionAllocated,
+        //fractionAllocated: Number(fractionAllocated), //fractionAllocated,
         mandays: Number(mandaysAllocated),
         isActive: true,
         isEngagementLead: isEngagementLead,
@@ -1096,7 +1098,8 @@ const CapacityAllocation = (props: any) => {
         };
       }
       const { data } = await APICall(
-        getAllocatedResourcePerMonthApiCall,
+        //  getAllocatedResourcePerMonthApiCall,
+        getAllocatedMandaysPerMonthApiCall,
         "POST",
         post
       );
@@ -1171,7 +1174,9 @@ const CapacityAllocation = (props: any) => {
       typeofEngagement.label === "AMC" ||
       typeofEngagement.label === "PROJECT" ||
       typeofEngagement.label === "PRODUCT" ||
-      typeofEngagement.label === "INTERNAL"
+      typeofEngagement.label === "PRODUCT" ||
+      typeofEngagement.label === "INTERNAL" ||
+      typeofEngagement.label === "T&M"
     ) {
       let post;
       if (field === "resourceAllocated" && fromDate && toDate && value) {
@@ -1232,7 +1237,7 @@ const CapacityAllocation = (props: any) => {
   };
 
   const getTotalResourceAllocation = async (field, value) => {
-    if (typeofEngagement.label === "T&M") {
+    if (typeofEngagement.label === "") {
       let post;
       if (field === "resourceAllocated" && fromDate && toDate && value) {
         post = {
@@ -1901,7 +1906,7 @@ const CapacityAllocation = (props: any) => {
                       </span>
                     </div>
                   </div>
-                  {typeofEngagement.label === "T&M" ? (
+                  {typeofEngagement.label === "" ? (
                     <>
                       <div className="col-lg-3 col-md-4 col-sm-6">
                         <div className="form-group">
@@ -1957,7 +1962,8 @@ const CapacityAllocation = (props: any) => {
                   ) : typeofEngagement.label === "AMC" ||
                     typeofEngagement.label === "PROJECT" ||
                     typeofEngagement.label === "PRODUCT" ||
-                    typeofEngagement.label === "INTERNAL" ? (
+                    typeofEngagement.label === "INTERNAL" ||
+                    typeofEngagement.label === "T&M" ? (
                     <>
                       <div className="col-lg-3 col-md-4 col-sm-6">
                         <div className="form-group">
@@ -2019,13 +2025,15 @@ const CapacityAllocation = (props: any) => {
                     {/* submitFunc('reset') submitFunc('submit') */}
                     <button
                       onClick={() => submitFunc("reset")}
-                      className="btn btn-reset ml-1">
+                      className="btn btn-reset ml-1"
+                    >
                       Reset
                     </button>
                     <button
                       onClick={() => submitFunc("submit")}
                       style={{ background: "#96c61c" }}
-                      className="btn btn-save ml-1">
+                      className="btn btn-save ml-1"
+                    >
                       Save
                     </button>
                   </div>
@@ -2051,7 +2059,8 @@ const CapacityAllocation = (props: any) => {
             backdrop="static"
             keyboard={false}
             centered
-            size="sm">
+            size="sm"
+          >
             <Modal.Body>
               <div className="col-lg-12 col-sm-12 col-xs-12 ">
                 <label className="col-form-label">
@@ -2068,7 +2077,8 @@ const CapacityAllocation = (props: any) => {
                   className="btn btn-reset ml-1"
                   size="sm"
                   variant="secondary"
-                  onClick={() => modelClose("cancel")}>
+                  onClick={() => modelClose("cancel")}
+                >
                   Cancel
                 </Button>
                 <Button
@@ -2077,7 +2087,8 @@ const CapacityAllocation = (props: any) => {
                   style={{ background: "#96c61c" }}
                   className="btn btn-save ml-1"
                   variant="primary"
-                  onClick={() => modelClose("ok")}>
+                  onClick={() => modelClose("ok")}
+                >
                   Ok
                 </Button>
               </div>

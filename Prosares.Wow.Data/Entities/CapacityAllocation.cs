@@ -41,5 +41,6 @@ namespace Prosares.Wow.Data.Entities
         public int pageSize { get; set; }
         public int start { get; set; }
 
+        
     }
 }

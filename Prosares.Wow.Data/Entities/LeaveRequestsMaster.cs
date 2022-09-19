@@ -46,6 +46,8 @@ namespace Prosares.Wow.Data.Entities
         public long EmployeeId { get; set; }
         public string CreatedByName { get; set; }
 
+        public Boolean ? IsPlanned { get; set; }
+
         [ForeignKey(nameof(ApproverId))]
         [InverseProperty(nameof(EmployeeMasterEntity.LeaveRequestsMasterApprovers))]
         public virtual EmployeeMasterEntity Approver { get; set; }

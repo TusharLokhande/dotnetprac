@@ -291,7 +291,8 @@ const LeaveRequestMaster = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     navigate("edit", { state: { id, role: "self" } });
-                  }}>
+                  }}
+                >
                   <i className="fa fa-pencil" aria-hidden="true"></i>
                 </a>
               </>
@@ -304,7 +305,8 @@ const LeaveRequestMaster = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     navigate("edit", { state: { id, role: "approver" } });
-                  }}>
+                  }}
+                >
                   <i className="fa fa-pencil" aria-hidden="true"></i>
                 </a>
               </>
@@ -317,10 +319,12 @@ const LeaveRequestMaster = () => {
                   onClick={(e) => {
                     e.preventDefault();
                     navigate("edit", { state: { id, role: "viewer" } });
-                  }}>
+                  }}
+                >
                   <i
                     className="fa fa-eye text-secondary"
-                    aria-hidden="true"></i>
+                    aria-hidden="true"
+                  ></i>
                 </a>
               </>
             );
@@ -410,7 +414,8 @@ const LeaveRequestMaster = () => {
         <Tooltip title="Export to excel">
           <button
             onClick={() => ExportToExcel()}
-            className="btn btn-secondary mr-2">
+            className="btn btn-secondary mr-2"
+          >
             <i className="fa-solid fa-file-arrow-down"></i>
           </button>
         </Tooltip>
@@ -502,13 +507,15 @@ const LeaveRequestMaster = () => {
               <div>
                 <button
                   onClick={() => onClickFunction("reset")}
-                  className="btn btn-reset ml-1">
+                  className="btn btn-reset ml-1"
+                >
                   Reset
                 </button>
                 <button
                   style={{ background: "#96c61c" }}
                   onClick={() => onClickFunction("Submit")}
-                  className="btn btn-save ml-1">
+                  className="btn btn-save ml-1"
+                >
                   Submit
                 </button>
               </div>

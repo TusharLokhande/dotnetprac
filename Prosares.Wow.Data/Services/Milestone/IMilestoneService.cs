@@ -16,7 +16,7 @@ namespace Prosares.Wow.Data.Services.Milestone
         bool CheckIfMilestoneExists(string MileStone);
         void InsertUpdateMilestoneData(Entities.MileStone value);
 
-        List<MileStone> MilestoneExportToExcel(string SearchText, string sortColumn, string sortDirection);
+        List<MileStone> MilestoneExportToExcel(MileStone value);
 
     }
 }

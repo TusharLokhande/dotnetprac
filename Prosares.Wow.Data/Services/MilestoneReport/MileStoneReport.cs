@@ -16,18 +16,18 @@ namespace Prosares.Wow.Data.Services.MilestoneReport
     {
         private readonly IRepository<Entities.MilestoneReportEntity> _milestone;
         private readonly IRepository<Customer> _customer;
-       // private readonly IRepository<Entities.DropeDownEntity> _dropedown;
+        // private readonly IRepository<Entities.DropeDownEntity> _dropedown;
 
 
         #region Constructor
-        public MileStoneReport(IRepository<Entities.MilestoneReportEntity> milestone , IRepository<Customer> customer)
+        public MileStoneReport(IRepository<Entities.MilestoneReportEntity> milestone, IRepository<Customer> customer)
         {
             _milestone = milestone;
             _customer = customer;
-          //  _dropedown = dropedown;
+            //  _dropedown = dropedown;
         }
 
-        public  dynamic  GetDropedownCustomerNameList()
+        public dynamic GetDropedownCustomerNameList()
         {
             SqlCommand command = new SqlCommand("GetCustomerDropDownList");
             command.CommandType = CommandType.StoredProcedure;
@@ -44,7 +44,7 @@ namespace Prosares.Wow.Data.Services.MilestoneReport
             //    obj.Add(rj);
             //}
 
-               }
+        }
 
         public IEnumerable<Entities.MilestoneReportEntity> GetDropedownEngagementTypeList()
         {
@@ -55,22 +55,24 @@ namespace Prosares.Wow.Data.Services.MilestoneReport
 
         public dynamic MilestoneDashboardData(Entities.MilestoneReportEntity value)
         {
-            
 
-         
+
+
+           
 
             SqlCommand command = new SqlCommand("stpGetReportMilestone");
             command.CommandType = CommandType.StoredProcedure;
             command.Parameters.Add("@pageSize", SqlDbType.BigInt).Value = value.pageSize;
             command.Parameters.Add("@start", SqlDbType.BigInt).Value = value.start;
-            command.Parameters.Add("@SortColumn", SqlDbType.VarChar).Value =value.SortColumn;
+            command.Parameters.Add("@SortColumn", SqlDbType.VarChar).Value = value.SortColumn;
             command.Parameters.Add("@SortOrder", SqlDbType.VarChar).Value = value.SortDirection;
             command.Parameters.Add("@SearchText", SqlDbType.VarChar).Value = value.SearchText;
-            command.Parameters.Add("@Customer", SqlDbType.VarChar).Value = value.Customer = "";
-            command.Parameters.Add("@EngagementTypeids", SqlDbType.VarChar).Value = value.EngagementType = "";
-             List<MilestoneReportEntity> list = _milestone.GetRecords(command).ToList();
+            command.Parameters.Add("@Customer", SqlDbType.VarChar).Value = (value.Customer == null ? value.Customer = "" : value.Customer) ;
+            command.Parameters.Add("@EngagementTypeids", SqlDbType.VarChar).Value = (value.EngagementType == null ? value.EngagementType = "" : value.EngagementType);
+            command.Parameters.Add("@FromDate", SqlDbType.Date).Value = value.FromDate ;
+            command.Parameters.Add("@ToDate", SqlDbType.Date).Value = value.ToDate;
+            List<MilestoneReportEntity> list = _milestone.GetRecords(command).ToList();
 
-            //var datax = new { Count = list[0].TotalCount, Data = list };
             MileStoneReportResponse data = new MileStoneReportResponse();
             data.Count = list[0].TotalCount;
             data.Data = list;
@@ -85,7 +87,8 @@ namespace Prosares.Wow.Data.Services.MilestoneReport
         #endregion
     }
 
-    public class MileStoneReportResponse {
+    public class MileStoneReportResponse
+    {
         public long Count { get; set; }
         public dynamic Data { get; set; }
     }

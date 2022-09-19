@@ -5,7 +5,7 @@ import axios from "axios";
 import fileDownload from "js-file-download";
 
 import moment from "moment";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import DynamicGrid from "../../../Components/DynamicGrid/DynamicGrid";
 import SelectForm from "../../../Components/SelectForm/SelectForm";
@@ -17,9 +17,11 @@ import {
   getCapacityAllocation,
   CapacityUtilizationReportExportToExcel,
 } from "../../../Helpers/API/APIEndPoints";
+import { LoaderContext } from "../../../Helpers/Context/Context";
 import "./CapacityUtilizationReport.css";
 
 const CapacityUtilizationReport = () => {
+  const { showLoader, hideLoader } = useContext(LoaderContext);
   const [fromDate, setFromDate] = useState<Date | null>(null);
   const [toDate, setToDate] = useState<Date | null>(null);
   const [customerOptions, setCustomerOptions] = useState([]);
@@ -32,7 +34,7 @@ const CapacityUtilizationReport = () => {
   );
   const [masterType, setMasterType] = useState({
     value: "",
-    label: "Select Master Type",
+    label: "Select Report Type",
     id: 0,
   });
   const [requestObject, setRequestObject] = useState([{ count: 0 }]);
@@ -233,7 +235,7 @@ const CapacityUtilizationReport = () => {
     }
 
     if (masterType.id === 0) {
-      objError["master_Empty"] = "Please select master type.";
+      objError["master_Empty"] = "Select Report Type.";
     }
     formErrorObj = objError;
     setFormErrors(objError);
@@ -243,6 +245,10 @@ const CapacityUtilizationReport = () => {
   };
 
   const Response = async (obj, api) => {
+    if (masterType.id === 0) {
+      return;
+    }
+
     if (masterType.value === "Resource") {
       setGridType(gridColumns_Resource);
     }
@@ -259,11 +265,16 @@ const CapacityUtilizationReport = () => {
       setGridType(gridColumns_EngagementType);
     }
 
+    showLoader();
     let x = { count: 0, data: [] };
     const { data } = await APICall(getCapacityAllocation, "POST", obj);
     x = { ...data };
+
+    console.log(x.data);
+
     setRequestObject(x.data);
     setCount(x.count);
+    hideLoader();
     return;
   };
 
@@ -653,25 +664,27 @@ const CapacityUtilizationReport = () => {
                       )}
                     />
                   </LocalizationProvider>
-                  <p style={{ color: "red" }}>{formErrors["toDate_isEmpty"]}</p>
                 </div>
+                <p style={{ color: "red" }}>{formErrors["toDate_isEmpty"]}</p>
               </div>
 
               <div className="col-lg-4 col-md-4 col-sm-6">
-                <label>
-                  Select Type <sup style={{ color: "red" }}>*</sup>
-                </label>
-                <SelectForm
-                  key={1}
-                  options={masterTypeOptions}
-                  placeholder="Select Type"
-                  isDisabled={false}
-                  value={masterType}
-                  onChange={(e) => SelectOnChange(e, "masterType")}
-                  isMulti={false}
-                  noIndicator={false}
-                  noSeparator={false}
-                />
+                <div className="form-group">
+                  <label className="d-block">
+                    Select Report Type <sup style={{ color: "red" }}>*</sup>
+                  </label>
+                  <SelectForm
+                    key={1}
+                    options={masterTypeOptions}
+                    placeholder="Select Report Type"
+                    isDisabled={false}
+                    value={masterType}
+                    onChange={(e) => SelectOnChange(e, "masterType")}
+                    isMulti={false}
+                    noIndicator={false}
+                    noSeparator={false}
+                  />
+                </div>
                 <p style={{ color: "red" }}>{formErrors["master_Empty"]}</p>
               </div>
 

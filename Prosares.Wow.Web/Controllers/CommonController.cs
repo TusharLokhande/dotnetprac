@@ -111,12 +111,12 @@ namespace Prosares.Wow.Web.Controllers
                             ExportToExcelForAllMasters(stream, costcenterData, common.master);
                             byt = stream.ToArray();
                         }
-                        else if (common.master == "milestone")
-                        {
-                            var milestoneData = _milestoneService.MilestoneExportToExcel(common.searchText, common.sortColumn, common.sortDirection);
-                            ExportToExcelForAllMasters(stream, milestoneData, common.master);
-                            byt = stream.ToArray();
-                        }
+                        //else if (common.master == "milestone")
+                        //{
+                        // var milestoneData = _milestoneService.MilestoneExportToExcel(common.searchText, common.sortColumn, common.sortDirection);
+                        //   // ExportToExcelForAllMasters(stream, milestoneData, common.master);
+                        //    //byt = stream.ToArray();
+                        //}
                         else if (common.master == "engagement")
                         {
                             var engagementData = _engagementService.EngagementExportToExcel(common.searchText, common.sortColumn, common.sortDirection);
@@ -1156,9 +1156,9 @@ namespace Prosares.Wow.Web.Controllers
                         col++;
                         worksheet.Cells[row, col].Value = item.MandaysPlanned;
                         col++;
-                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        worksheet.Cells[row, col].Value = Math.Round(item.MandaysActual, 2);
                         col++;
-                        worksheet.Cells[row, col].Value = item.NonCharged;
+                        worksheet.Cells[row, col].Value = Math.Round(item.NonCharged, 2);
                         col++;
                         worksheet.Cells[row, col].Value = item.MandaysLeaves;
                         col++;
@@ -1177,11 +1177,11 @@ namespace Prosares.Wow.Web.Controllers
                         col++;
                         worksheet.Cells[row, col].Value = item.MandaysPlanned;
                         col++;
-                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        worksheet.Cells[row, col].Value = Math.Round(item.MandaysActual, 2);
                         col++;
                         worksheet.Cells[row, col].Value = item.Variance;
                         col++;
-                        worksheet.Cells[row, col].Value = item.NonCharged;
+                        worksheet.Cells[row, col].Value = Math.Round(item.NonCharged, 2);
                         col++;
                         worksheet.Cells[row, col].Value = item.POManDays;
                         col++;
@@ -1192,7 +1192,7 @@ namespace Prosares.Wow.Web.Controllers
                         worksheet.Cells[row, col].Value = item.BalanceMandays;
                         col++;
 
-                        worksheet.Cells[row, col].Value = item.POValue;
+                        worksheet.Cells[row, col].Value =  Math.Round(item.POValue, 2);
                         col++;
                         worksheet.Cells[row, col].Value = item.POStatus;
                         col++;
@@ -1210,7 +1210,7 @@ namespace Prosares.Wow.Web.Controllers
                         col++;
                         worksheet.Cells[row, col].Value = item.MandaysPlanned;
                         col++;
-                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        worksheet.Cells[row, col].Value = Math.Round(item.MandaysActual, 2);
                         col++;
                         worksheet.Cells[row, col].Value = item.Variance;
                         col++;
@@ -1235,9 +1235,9 @@ namespace Prosares.Wow.Web.Controllers
                         col++;
                         worksheet.Cells[row, col].Value = item.MandaysPlanned;
                         col++;
-                        worksheet.Cells[row, col].Value = item.MandaysActual;
+                        worksheet.Cells[row, col].Value = Math.Round(item.MandaysActual, 2);
                         col++;
-                        worksheet.Cells[row, col].Value = item.NonCharged;
+                        worksheet.Cells[row, col].Value = Math.Round(item.NonCharged, 2);
                         col++;
                         worksheet.Cells[row, col].Value = item.Variance;
                         col++;

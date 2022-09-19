@@ -945,13 +945,15 @@ function TaskAssignment() {
               <div className="float-right">
                 <button
                   className="btn btn-reset ml-1"
-                  onClick={(e) => onClickFunction(e, "Reset")}>
+                  onClick={(e) => onClickFunction(e, "Reset")}
+                >
                   Reset
                 </button>
                 <button
                   style={{ background: "#96c61c" }}
                   className="btn btn-save ml-1"
-                  onClick={(e) => onClickFunction(e, "Submit")}>
+                  onClick={(e) => onClickFunction(e, "Submit")}
+                >
                   Submit
                 </button>
               </div>

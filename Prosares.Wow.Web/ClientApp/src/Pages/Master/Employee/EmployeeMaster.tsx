@@ -80,7 +80,8 @@ const EmployeeMaster = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   navigate("edit", { state: id });
-                }}>
+                }}
+              >
                 <i className="fa fa-pencil" aria-hidden="true"></i>
               </a>
             </>
@@ -104,6 +105,7 @@ const EmployeeMaster = () => {
         "POST",
         requestParams
       );
+      console.log(data.employeeData);
       setEmployeeData(data.employeeData);
       setCount(data.count);
     })();
@@ -182,7 +184,8 @@ const EmployeeMaster = () => {
         <Tooltip title="Export to excel">
           <button
             onClick={() => ExportToExcel()}
-            className="btn btn-secondary mr-2">
+            className="btn btn-secondary mr-2"
+          >
             <i className="fa-solid fa-file-arrow-down"></i>
           </button>
         </Tooltip>

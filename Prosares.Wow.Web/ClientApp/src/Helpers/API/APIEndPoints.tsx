@@ -105,7 +105,7 @@ export const getEmployeeMasterGridData =
 export const InsertUpdateEmployeeMasterData =
   url + "/api/employeeMaster/insertUpdatEmployeeMasterData"; // added now
 export const getEmployeeByIdUrl = url + "/api/employeeMaster/getEmployeeById";
-export const EmployeeExportToExcel = url + "/api/Common/CommonExportToExcel";
+export const EmployeeExportToExcel = url + "/api/employeeMaster/ExportToExcel";
 
 //WorkPolicy Master
 
@@ -139,7 +139,9 @@ export const getAutoPopulatedDataForTicket =
 
 export const getAutoPopulatedAssignedHoursData =
   url + "/api/Task/AutoPopulateAssignedHoursFields";
-export const MilestoneExportToExcel = url + "/api/Common/CommonExportToExcel";
+
+export const MilestoneExportToExcel =
+  url + "/api/milestone/MilestoneExportToExecl";
 
 //Timesheet Policy
 export const getTimeSheetPolicyDataById =

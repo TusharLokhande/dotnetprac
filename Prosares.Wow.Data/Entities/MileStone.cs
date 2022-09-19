@@ -39,6 +39,7 @@ namespace Prosares.Wow.Data.Entities
 
         public DateTime toDate { get; set; }
 
+        public string Engagement_Type { get; set; }
 
         [ForeignKey(nameof(EngagementId))]
         [InverseProperty(nameof(EngagementMaster.MileStones))]

@@ -411,6 +411,7 @@ namespace Prosares.Wow.Data.DBContext
             modelBuilder.Entity<LeaveRequestsMaster>(entity =>
             {
                 entity.Property(e => e.CreatedDate).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.IsPlanned);
                 entity.Ignore(e => e.pageSize);
                 entity.Ignore(e => e.start);
                 entity.Ignore(e => e.sortColumn);
@@ -463,7 +464,7 @@ namespace Prosares.Wow.Data.DBContext
                 entity.Ignore(e => e.searchText);
                 entity.Ignore(e => e.fromDate);
                 entity.Ignore(e => e.toDate);
-
+                entity.Ignore(e => e.Engagement_Type);
             });
 
             modelBuilder.Entity<NotificationMaster>(entity =>

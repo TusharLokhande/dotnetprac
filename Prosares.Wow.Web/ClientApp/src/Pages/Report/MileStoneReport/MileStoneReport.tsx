@@ -19,10 +19,11 @@ import { LoaderContext } from "../../../Helpers/Context/Context";
 import moment from "moment";
 import axios from "axios";
 import fileDownload from "js-file-download";
+import notify from "../../../Helpers/ToastNotification";
 
 const MileStoneReport = () => {
-  const [fromDate, setFromDate] = useState<Date | null>(null);
-  const [toDate, setToDate] = useState<Date | null>(null);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
   const [customerOptions, setCustomerOptions] = useState([]);
   const [customerSelectData, setCustomerSelectData] = useState([]);
   const [engagementTypeOptions, setEngagementTypeOptions] = useState([]);
@@ -38,6 +39,7 @@ const MileStoneReport = () => {
   const [count, setCount] = useState(0);
   const [formErrors, setFormErrors] = useState({});
   const { showLoader, hideLoader } = useContext(LoaderContext);
+  const [reset, setReset] = useState(false);
 
   let navigate = useNavigate();
   let formErrorObj = {};
@@ -47,8 +49,15 @@ const MileStoneReport = () => {
   }, []);
 
   useEffect(() => {
-    let customers = ConvertArrayToString(customerSelectData);
-    let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
+    onLoadApiCall();
+  }, [reset]);
+
+  useEffect(() => {
+    let customers = ConvertArrayToString(customerSelectData, "custormers");
+    let engagementTypes = ConvertArrayToString(
+      engagementTypeSelectedData,
+      "engagementType"
+    );
 
     if (customers.length <= 0) {
       customers = "";
@@ -57,11 +66,19 @@ const MileStoneReport = () => {
       engagementTypes = "";
     }
 
+    let f = moment(fromDate).format(moment.HTML5_FMT.DATE);
+    let t = moment(toDate).format(moment.HTML5_FMT.DATE);
+
+    if (fromDate == null) {
+      f = null;
+      t = null;
+    }
+
     let requestData = {
       Customers: customers,
       EngagementTypes: engagementTypes,
-      FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-      ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+      FromDate: f,
+      ToDate: t,
       sortColumn,
       sortDirection,
       searchText,
@@ -115,14 +132,21 @@ const MileStoneReport = () => {
 
   const submitFunc = async (apiField) => {
     if (apiField === "submit") {
-      let customers = ConvertArrayToString(customerSelectData);
-      let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
+      let customers = ConvertArrayToString(customerSelectData, "custormers");
+      let engagementTypes = ConvertArrayToString(
+        engagementTypeSelectedData,
+        "engagementType"
+      );
 
       let obj = {
         Customer: customers,
         EngagementType: engagementTypes,
-        FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-        ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+        FromDate:
+          fromDate !== null
+            ? moment(fromDate).format(moment.HTML5_FMT.DATE)
+            : null,
+        ToDate:
+          toDate !== null ? moment(toDate).format(moment.HTML5_FMT.DATE) : null,
         sortColumn,
         sortDirection,
         searchText,
@@ -130,8 +154,8 @@ const MileStoneReport = () => {
         start,
         count,
       };
-
       const check = Validation();
+
       if (check) {
         await getReportData(obj);
       }
@@ -143,24 +167,40 @@ const MileStoneReport = () => {
       setFormErrors({});
       setCustomerSelectData([]);
       setEngagementTypeSelectedData([]);
+      setReset(!reset);
     }
   };
 
-  const ConvertArrayToString = (arr) => {
+  const ConvertArrayToString = (arr, apiField) => {
     let s = [];
-    arr.map((i) => s.push(i.id));
+
+    if (apiField === "engagementType") {
+      arr.map((i) => s.push(i.id));
+    }
+
+    if (apiField === "custormers") {
+      arr.map((i) => s.push(i.value));
+    }
+
     return s.join(",");
   };
 
   const ExportToExcel = async () => {
-    let customers = ConvertArrayToString(customerSelectData);
-    let engagementTypes = ConvertArrayToString(engagementTypeSelectedData);
+    let customers = ConvertArrayToString(customerSelectData, "custormers");
+    let engagementTypes = ConvertArrayToString(
+      engagementTypeSelectedData,
+      "engagementType"
+    );
 
     let obj = {
       Customer: customers,
       EngagementType: engagementTypes,
-      FromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
-      ToDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+      FromDate:
+        fromDate !== null
+          ? moment(fromDate).format(moment.HTML5_FMT.DATE)
+          : null,
+      ToDate:
+        toDate !== null ? moment(toDate).format(moment.HTML5_FMT.DATE) : null,
       sortColumn,
       sortDirection,
       searchText,
@@ -190,7 +230,7 @@ const MileStoneReport = () => {
           fileDownload(response.data, "MileStone Report.xlsx");
         })
         .catch((error) => {
-          console.log(error.response.data);
+          notify(1, "Something went wrong");
         });
     }
   };
@@ -255,11 +295,11 @@ const MileStoneReport = () => {
     let objError = {};
 
     if (fromDate == undefined || fromDate == null) {
-      objError["fromDate_isEmpty"] = "From date can not be empty";
+      objError["fromDate_isEmpty"] = "Date can not be empty";
     }
 
     if (toDate == undefined || toDate == null) {
-      objError["toDate_isEmpty"] = "Valid Till date can not be empty";
+      objError["toDate_isEmpty"] = "Date can not be empty";
     }
 
     formErrorObj = objError;
@@ -361,13 +401,13 @@ const MileStoneReport = () => {
       name: "invoicedDate",
       label: "Invoice Data",
       options: {
-        customBodyRender: (value, tableMeta, updateValue) => {
+        customBodyRender: (value, tableMeta) => {
           let date = moment(value).format(moment.HTML5_FMT.DATE);
-          return (
-            <>
-              <p>{date}</p>
-            </>
-          );
+          if (date === "Invalid date") {
+            return <p></p>;
+          } else {
+            return <p>{date}</p>;
+          }
         },
       },
     },
@@ -375,11 +415,10 @@ const MileStoneReport = () => {
   return (
     <>
       <Heading title={"MileStone Report"} />
-
-      <section className="main_content">
+      <section className="main_content" style={{ marginTop: "30px" }}>
         <div className="container-fluid">
           <div className="row">
-            <div className="col-lg-2 col-md-4 col-sm-6">
+            <div className="col-lg-2 col-md-4 col-sm-6 align-self-start">
               <div className="form-group">
                 <label>Select Customer</label>
                 <SelectForm
@@ -396,9 +435,9 @@ const MileStoneReport = () => {
               </div>
             </div>
 
-            <div className="col-lg-2 col-md-4 col-sm-6">
+            <div className="col-lg-2 col-md-4 col-sm-6 align-self-start">
               <div className="form-group">
-                <label>Select Engagement Type</label>
+                <label>Select Engagement Type </label>
                 <SelectForm
                   value={engagementTypeSelectedData}
                   onChange={(e) => SelectOnChange(e, "engagementType")}
@@ -408,12 +447,12 @@ const MileStoneReport = () => {
                   isClearable={true}
                   closeMenuOnSelect={false}
                   hideSelectedOptions={false}
-                  placeholder="Select Engagement Type"
+                  placeholder="Select Engagement"
                 />
               </div>
             </div>
 
-            <div className="col-lg-2 col-md-4 col-sm-6 align-self-center">
+            <div className="col-lg-2 col-md-4 col-sm-6 ">
               <div className="form-group">
                 <label className="d-block">
                   From Date <sup>*</sup>
@@ -429,11 +468,11 @@ const MileStoneReport = () => {
                     )}
                   />
                 </LocalizationProvider>
+                <p style={{ color: "red" }}>{formErrors["fromDate_isEmpty"]}</p>
               </div>
-              <p style={{ color: "red" }}>{formErrors["fromDate_isEmpty"]}</p>
             </div>
 
-            <div className="col-lg-2 col-md-4 col-sm-6 align-self-center">
+            <div className="col-lg-2 col-md-4 col-sm-6 ">
               <div className="form-group">
                 <label className="d-block">
                   To Date <sup>*</sup>
@@ -450,25 +489,15 @@ const MileStoneReport = () => {
                     )}
                   />
                 </LocalizationProvider>
+                <p style={{ color: "red" }}>{formErrors["toDate_isEmpty"]}</p>
               </div>
-              <p style={{ color: "red" }}>{formErrors["toDate_isEmpty"]}</p>
             </div>
 
-            {/* Buttons */}
-            <div className="col-lg-3 col-md-4 col-sm-6 mt-4">
-              <div className="d-flex justify-content-end gap-2">
-                <Tooltip title="Export to excel">
-                  <button
-                    onClick={() => ExportToExcel()}
-                    className="btn btn-secondary mr-2"
-                  >
-                    <i className="fa-solid fa-file-arrow-down"></i>
-                  </button>
-                </Tooltip>
+            <div className="col-lg-3 col-md-4 col-sm-6 align-self-center">
+              <div>
                 <button
                   onClick={() => submitFunc("reset")}
                   className="btn btn-reset ml-1"
-                  // disabled={state !== null ? true : false}
                 >
                   Reset
                 </button>
@@ -479,12 +508,14 @@ const MileStoneReport = () => {
                 >
                   Submit
                 </button>
-                <button
-                  onClick={() => navigate("/")}
-                  className="btn btn-secondary"
-                >
-                  Back
-                </button>
+                <Tooltip title="Export to excel">
+                  <button
+                    onClick={() => ExportToExcel()}
+                    className="btn btn-secondary ml-2"
+                  >
+                    <i className="fa-solid fa-file-arrow-down"></i>
+                  </button>
+                </Tooltip>
               </div>
             </div>
           </div>

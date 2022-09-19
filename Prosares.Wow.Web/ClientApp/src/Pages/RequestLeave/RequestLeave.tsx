@@ -12,7 +12,6 @@ function RequestLeave() {
   const [fromDateType, setFromDateType] = useState<any>({});
   const [toDateType, setToDateType] = useState<any>({});
   const [reason, setReason] = useState<any>({});
-
   const [noOfDaysLeave, setNoOfDaysLeave] = useState<any>("");
   const [availableBalance, setAvailableBalance] = useState<any>("");
   const [remarks, setRemarks] = useState<any>("");
@@ -229,7 +228,8 @@ function RequestLeave() {
                   <button className="btn btn-reset ml-1">Reset</button>
                   <button
                     style={{ background: "#96c61c" }}
-                    className="btn btn-save ml-1">
+                    className="btn btn-save ml-1"
+                  >
                     Submit
                   </button>
                 </div>

@@ -69,7 +69,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                      ).ToList();
                     report = data;
                     count = data.Count();
-                    data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
                 }
                 
@@ -98,7 +98,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
 
                     report = data;
                     count = data.Count();
-                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty("customer").ToList();
                 }
 
                 else if (value.sortDirection == "desc")
@@ -109,7 +109,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                      ).ToList();
                     report = data;
                     count = data.Count();
-                    data = data.Skip(value.start).Take(value.pageSize).ToList();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
                 }
 
@@ -155,7 +155,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                      ).ToList();
                     report = data;
                     count = data.Count();
-                    data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
                 }
 
@@ -197,7 +197,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                     ).ToList();
                     report = data;
                     count = data.Count();
-                    data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
                 }
 

@@ -14,6 +14,7 @@ export function getContext() {
 
   function getCookie(name) {
     const value = `; ${document.cookie}`;
+    console.log(value);
     const parts = value.split(`; ${name}=`);
     if (parts.length === 2)
       return parts
@@ -21,6 +22,7 @@ export function getContext() {
         .split(";")
         .shift();
   }
+
   if (token != undefined) {
     decoded = jwt_decode(token);
   }

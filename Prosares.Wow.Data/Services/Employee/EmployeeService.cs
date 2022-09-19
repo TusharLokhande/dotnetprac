@@ -1,4 +1,5 @@
-﻿using Microsoft.Data.SqlClient;
+﻿using DocumentFormat.OpenXml.Bibliography;
+using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using Prosares.Wow.Data.DBContext;
 using Prosares.Wow.Data.Entities;
@@ -129,6 +130,7 @@ namespace Prosares.Wow.Data.Services.Employee
             Expression<Func<Entities.EmployeeMasterEntity, bool>> SearchText;
 
             InitialCondition = k => k.Id != 0;
+
 
             if (value.searchText != null)
             {
@@ -378,6 +380,133 @@ namespace Prosares.Wow.Data.Services.Employee
             // return employeeMaster;
         }
 
+
+        public dynamic SaiExportToExcel(EmployeeMasterEntity value)
+        {
+
+            //from erm in _employeeRoleMapping.Table.Where(k => k.EmployeeId == em.Id).Select(k => k.RoleId)
+
+           var x = new EmployeeMasterResponse();
+
+            //var data = ( from em in _employeeMaster.Table
+            //             join cc in _costCentre.Table on em.CostCenterId equals cc.Id
+            //             join wc in _workPolicyMaster.Table on em.WorkPolicyId equals wc.Id
+            //             join kk in _employeeRoleMapping.Table on em.Id equals kk.EmployeeId
+            //             join rm in _roleMaster.Table on kk.RoleId equals rm.Id
+            //             from em2 in _employeeMaster.Table 
+            //             join ermp in _employeeReportingManagerMapping.Table on em.Id equals ermp.ReportingManagerId
+            //             join elb in _employeeLeaveBalance.Table on em.Id equals elb.EmployeeId into elbg
+            //             from elb in elbg.DefaultIfEmpty()
+            //             join ermm in _employeeReportingManagerMapping.Table on em.Id equals ermm.EmployeeId into ermmg
+            //             from ermm in ermmg.DefaultIfEmpty()
+            //             select new
+            //             {
+            //                 Eid = em.Eid,
+            //                 Name = em.Name,
+            //                 ShortName = em.ShortName,
+            //                 CostCenterId = em.CostCenterId,
+            //                 CostCenter = cc.CostCenter1,
+            //                 WorkPolicyId = em.WorkPolicyId,
+            //                 WorkPolicy = wc.PolicyName,
+            //                 TimeSheetPolicy = em.TimeSheetPolicy,
+            //                 Efficiency = em.Efficiency,
+            //                 ReportingManager = "",
+            //                 //Id = em.Id,
+            //                 //LoginId = em.LoginId,
+            //                 //Password = em.Password,
+            //                 IsActive = em.IsActive,
+            //                // leaveBalance = elb == null ? 0 : elb.LeaveBalance,
+            //                 //employeeRoleIds = _employeeRoleMapping.Table.Where(k => k.EmployeeId == em.Id)
+            //                 // .Select(s => s.RoleId).ToArray().DefaultIfEmpty(),
+            //                 reportingManagerId = ermm == null ? 0 : ermm.ReportingManagerId,
+            //                 RoleName = rm.RoleName,
+
+            //             }).ToList();
+
+            var data = (from emp in _employeeMaster.Table
+                        join cc in _costCentre.Table on emp.CostCenterId equals cc.Id             //CostCenterName
+                        join wc in _workPolicyMaster.Table on emp.WorkPolicyId equals wc.Id       //Workpolicyname
+                        join erm in _employeeRoleMapping.Table on emp.Id equals erm.EmployeeId    //RoleId
+                        join rm in _roleMaster.Table on erm.RoleId equals rm.Id                    //Rolename
+                        from emp2 in _employeeMaster.Table
+                        join ermp in _employeeReportingManagerMapping.Table on emp2.Id equals ermp.ReportingManagerId
+                        where emp.Id == ermp.Id
+                        select new
+                        {
+                            Eid = emp.Id,
+                            Name = emp.Name,
+                            ShortName = emp.ShortName,
+                            CostCenterId = emp.CostCenterId,
+                            CostCenter = cc.CostCenter1,
+                            WorkPolicyId = emp.WorkPolicyId,
+                            WorkPolicy = wc.PolicyName,
+                            TimeSheetPolicy = emp.TimeSheetPolicy,
+                            Efficiency = emp.Efficiency,
+                            ReportingManager = emp2.Name,
+                            //Id = em.Id,
+                            //LoginId = em.LoginId,
+                            //Password = em.Password,
+                            IsActive = emp.IsActive,
+                            // leaveBalance = elb == null ? 0 : elb.LeaveBalance,
+                            //employeeRoleIds = _employeeRoleMapping.Table.Where(k => k.EmployeeId == em.Id)
+                            // .Select(s => s.RoleId).ToArray().DefaultIfEmpty(),
+                            reportingManagerId = ermp == null ? 0 : ermp.ReportingManagerId,
+                            RoleName = rm.RoleName
+                        }).ToList();
+
+
+
+            Expression< Func<Entities.EmployeeMasterEntity, bool> > InitialCondition;
+           
+
+            InitialCondition = k => k == k;
+
+            var count = 0;
+
+
+                if (value.sortColumn == "" || value.sortDirection == "" || value.sortColumn == null)
+                {
+
+                    data = data.Where(
+                                        k => ((value.searchText != null) ? k.Name != null && k.Name.ToLower().Contains(value.searchText.ToLower()) || k.ShortName != null && k.ShortName.ToLower().Contains(value.searchText.ToLower()) : k.ShortName != "")
+                                     ).ToList();
+                   // report = data;
+                    count = data.Count();
+
+                    data = data.Skip(value.start).Take(count).AsQueryable().OrderByPropertyDescending("Name").ToList();
+                }
+
+            else if (value.sortDirection == "desc")
+            {
+
+                data = data.Where(
+                                        k => ((value.searchText != null) ? k.Name != null && k.Name.ToLower().Contains(value.searchText.ToLower()) || k.ShortName != null && k.ShortName.ToLower().Contains(value.searchText.ToLower()) : k.ShortName != "")
+                                     ).ToList();
+                // report = data;
+                count = data.Count();
+                data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
+
+            }
+
+            else if (value.sortDirection == "asc")
+            {
+
+                data = data.Where(
+                                          k => ((value.searchText != null) ? k.Name != null && k.Name.ToLower().Contains(value.searchText.ToLower()) || k.ShortName != null && k.ShortName.ToLower().Contains(value.searchText.ToLower()) : k.ShortName != "")
+                                       ).ToList();
+                // report = data;
+                count = data.Count();
+                data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
+
+            }
+
+
+
+            return data;
+
+
+        }
+
         public double GetEmployeeAvailableLeaveBalance(EmployeeLeaveRequest value)
         {
 
@@ -492,13 +621,56 @@ namespace Prosares.Wow.Data.Services.Employee
         public class EmployeeMasterResponse
         {
             public int count { get; set; }
-            public List<Entities.EmployeeMasterEntity> employeeData { get; set; }
+            public dynamic employeeData { get; set; }
         }
 
         public class EmployeeLeaveRequest
         {
             public long EmployeeId { get; set; }
         }
+
+        public class EmployeeExportToExcelModel {
+
+
+            //Eid = em.Eid,
+            //                    Name = em.Name,
+            //                    ShortName = em.ShortName,
+            //                    CostCenterId = em.CostCenterId,
+            //                    CostCenter = cc.CostCenter1,
+            //                    WorkPolicyId = em.WorkPolicyId,
+            //                    WorkPolicy = wc.PolicyName,
+            //                    TimeSheetPolicy = em.TimeSheetPolicy,
+            //                    Efficiency = em.Efficiency,
+            //                    Id = em.Id,
+            //                    LoginId = em.LoginId,
+            //                    //Password = em.Password,
+            //                    isActive = em.IsActive,
+            //                    leaveBalance = elb == null ? 0 : elb.LeaveBalance,
+            //                    employeeRoleIds = _employeeRoleMapping.Table.Where(k => k.EmployeeId == em.Id)
+            //                     .Select(s => s.RoleId).ToArray().DefaultIfEmpty(),
+            //                    reportingManagerId = ermm == null ? 0 : ermm.ReportingManagerId,
+
+            public string Name { get; set; }
+            public string ShortName { get; set; }
+
+            public string CostCenter { get; set; }
+
+            public long CostCenterId { get; set; }
+            public long WorkPolicyId { get; set; }
+            public string WorkPolicy { get; set; }
+            public string TimeSheetPolicy { get; set; }
+            public string RoleName { get; set; }
+
+
+            public double Efficiency { get; set; }
+
+            public long Id { get; set; }
+
+            public Boolean IsActive { get; set; }
+
+            public long employeeRoleIds {get; set;}
+        }
+
         #endregion
     }
 }

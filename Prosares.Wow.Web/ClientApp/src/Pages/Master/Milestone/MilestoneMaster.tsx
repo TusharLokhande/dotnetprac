@@ -72,6 +72,13 @@ const MilestoneMaster = () => {
         filter: false,
         sort: true,
         sortDescFirst: true,
+        customBodyRender: (value, tableMeta) => {
+          if (value == "Invalid date") {
+            return <p></p>;
+          } else {
+            return <p>{value}</p>;
+          }
+        },
       },
     },
 
@@ -82,6 +89,13 @@ const MilestoneMaster = () => {
         filter: false,
         sort: true,
         sortDescFirst: true,
+        customBodyRender: (value, tableMeta) => {
+          if (value == "Invalid date") {
+            return <p></p>;
+          } else {
+            return <p>{value}</p>;
+          }
+        },
       },
     },
 
@@ -92,6 +106,13 @@ const MilestoneMaster = () => {
         filter: false,
         sort: true,
         sortDescFirst: true,
+        customBodyRender: (value, tableMeta) => {
+          if (value == "Invalid date") {
+            return <p></p>;
+          } else {
+            return <p>{value}</p>;
+          }
+        },
       },
     },
 
@@ -102,6 +123,13 @@ const MilestoneMaster = () => {
         filter: false,
         sort: true,
         sortDescFirst: true,
+        customBodyRender: (value, tableMeta) => {
+          if (value == "Invalid date") {
+            return <p></p>;
+          } else {
+            return <p>{value}</p>;
+          }
+        },
       },
     },
 
@@ -135,7 +163,8 @@ const MilestoneMaster = () => {
                 onClick={(e) => {
                   e.preventDefault();
                   navigate("edit", { state: id });
-                }}>
+                }}
+              >
                 <i className="fa fa-pencil" aria-hidden="true"></i>
               </a>
             </>
@@ -144,6 +173,7 @@ const MilestoneMaster = () => {
       },
     },
   ];
+
   useEffect(() => {
     (async () => {
       let requestParams = {
@@ -161,6 +191,7 @@ const MilestoneMaster = () => {
         "POST",
         requestParams
       );
+      console.log(data.milestoneData);
       setMilestoneData(data.milestoneData);
 
       if (data.milestoneData != null || data.milestoneData != undefined) {
@@ -222,6 +253,17 @@ const MilestoneMaster = () => {
     },
   };
   const ExportToExcel = async () => {
+    let requestParams = {
+      start: start,
+      pageSize: count,
+      sortColumn: sortColumn,
+      sortDirection: sortDirection,
+      searchText: searchText,
+
+      fromDate: moment(fromDate).format(moment.HTML5_FMT.DATE),
+      toDate: moment(toDate).format(moment.HTML5_FMT.DATE),
+    };
+
     axios
       .request({
         responseType: "blob",
@@ -235,12 +277,7 @@ const MilestoneMaster = () => {
           "Content-Type": "application/json",
           "Access-Control-Allow-Headers": "*",
         },
-        data: {
-          searchText: searchText,
-          sortColumn: sortColumn,
-          sortDirection: sortDirection,
-          master: "milestone",
-        },
+        data: requestParams,
       })
       .then((response) => {
         fileDownload(response.data, "Milestone Report.xlsx");
@@ -281,7 +318,8 @@ const MilestoneMaster = () => {
         <Tooltip title="Export to excel">
           <button
             onClick={() => ExportToExcel()}
-            className="btn btn-secondary mr-2">
+            className="btn btn-secondary mr-2"
+          >
             <i className="fa-solid fa-file-arrow-down"></i>
           </button>
         </Tooltip>
@@ -328,13 +366,15 @@ const MilestoneMaster = () => {
               <div>
                 <button
                   onClick={() => onClickFunction("reset")}
-                  className="btn btn-reset ml-1">
+                  className="btn btn-reset ml-1"
+                >
                   Reset
                 </button>
                 <button
                   style={{ background: "#96c61c" }}
                   onClick={() => onClickFunction("Submit")}
-                  className="btn btn-save ml-1">
+                  className="btn btn-save ml-1"
+                >
                   Submit
                 </button>
               </div>

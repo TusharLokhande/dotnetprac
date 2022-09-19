@@ -1337,13 +1337,15 @@ const TicketAssignment = () => {
               <div className="float-right">
                 <button
                   onClick={() => onClickFunction("reset")}
-                  className="btn btn-reset ml-1">
+                  className="btn btn-reset ml-1"
+                >
                   Reset
                 </button>
                 <button
                   style={{ background: "#96c61c" }}
                   onClick={() => onClickFunction("submit")}
-                  className="btn btn-save ml-1">
+                  className="btn btn-save ml-1"
+                >
                   Submit
                 </button>
               </div>

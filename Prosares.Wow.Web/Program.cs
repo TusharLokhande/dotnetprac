@@ -23,7 +23,6 @@ namespace Prosares.Wow.Web
                     webBuilder.UseStartup<Startup>();
                 })
                 .ConfigureLogging(logBuilder => {
-
                     logBuilder.SetMinimumLevel(LogLevel.Trace);
                     logBuilder.AddLog4Net("log4net.config");
                 });

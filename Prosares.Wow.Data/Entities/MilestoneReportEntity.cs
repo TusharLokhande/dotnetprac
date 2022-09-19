@@ -16,11 +16,18 @@ namespace Prosares.Wow.Data.Entities
         public string Engagement { get; set; }
         public long EngagementId { get; set; }
 
-        public float POValue { get; set; }
+        public decimal POValue { get; set; }
 
         public long TotalCount { get; set; }
 
         public decimal Amount { get; set; }
+
+        [Column(TypeName = "date")]
+        public DateTime? FromDate { get; set; } 
+        
+        [Column(TypeName = "date")]
+        public DateTime? ToDate { get; set; }    
+
         [Column(TypeName = "date")]
         public DateTime PlannedDate { get; set; }
         [Column(TypeName = "date")]
@@ -28,7 +35,7 @@ namespace Prosares.Wow.Data.Entities
         [Column(TypeName = "date")]
         public DateTime? CompletedDate { get; set; }
         [Column(TypeName = "date")]
-        public DateTime InvoicedDate { get; set; }
+        public DateTime? InvoicedDate { get; set; }
         public long MandaysBalance { get; set; }
         public string Customer { get; set; }
         public string EngagementType { get; set; }

@@ -42,7 +42,7 @@ function ManagerDashboard() {
   const [isTask, setIsTask] = React.useState<any>(location.state);
   const context = getContext();
   const [columns, setColumns] = React.useState<any>([]);
-
+  const [reset, setReset] = useState(false);
   const gridColumns = [
     {
       name: "id",
@@ -250,7 +250,7 @@ function ManagerDashboard() {
       hideLoader();
       await setCount(data.data.count);
     })();
-  }, [start, sortColumn, sortDirection, searchText, location.state]);
+  }, [start, sortColumn, sortDirection, searchText, location.state, reset]);
 
   const options = {
     selectableRows: "none",
@@ -464,6 +464,7 @@ function ManagerDashboard() {
       }
 
       hideLoader();
+      setReset(false);
       setCount(data.data.count);
     } else {
       setEngagement([]);
@@ -471,6 +472,7 @@ function ManagerDashboard() {
       setToDate(null);
       setSearchText("");
       setStatus({});
+      setReset(true);
     }
   };
   const navigateTo = () => {
@@ -628,19 +630,22 @@ function ManagerDashboard() {
               <div>
                 <button
                   onClick={() => onClickFunction("reset")}
-                  className="btn btn-reset ml-1">
+                  className="btn btn-reset ml-1"
+                >
                   Reset
                 </button>
                 <button
                   style={{ background: "#96c61c" }}
                   onClick={() => onClickFunction("Submit")}
-                  className="btn btn-save ml-1">
+                  className="btn btn-save ml-1"
+                >
                   Submit
                 </button>
                 <Tooltip title="Export to excel">
                   <button
                     onClick={() => ExportToExcel()}
-                    className="btn btn-secondary ml-2">
+                    className="btn btn-secondary ml-2"
+                  >
                     <i className="fa-solid fa-file-arrow-down"></i>
                   </button>
                 </Tooltip>

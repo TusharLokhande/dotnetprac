@@ -113,6 +113,8 @@ const ApplicationMasterEdit = () => {
 
   const onClickFunction = async (action) => {
     if (action === "submit") {
+      let ero = await submitValidation();
+
       let requestObject = {
         id: applicationId,
         application: application,
@@ -123,7 +125,6 @@ const ApplicationMasterEdit = () => {
       if (applicationId !== 0) {
         requestObject.id = applicationId;
       }
-      let ero = await submitValidation();
 
       const isEmpty = await Object.values(formErrorObj).every(
         (x) => x === null || x === "" || x == undefined
@@ -136,13 +137,42 @@ const ApplicationMasterEdit = () => {
 
     if (action === "reset") {
       setApplication("");
-      setEngagement(null);
+      setEngagement({});
+      setFormErrors({});
     }
   };
 
   const selectOnChange = async (event: any, apiFieldName: any) => {
+    if (apiFieldName === "applicationName") {
+      setApplication(event.target.value);
+      if (event) {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["applicationName_isEmpty"]: undefined,
+          ["ApplicationName_exists"]: undefined,
+        }));
+      } else {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["applicationName_isEmpty"]: "Application Name can not be empty",
+          ["ApplicationName_exists"]: "Application Name already exists",
+        }));
+      }
+    }
+
     if (apiFieldName === "engagement") {
       setEngagement(event);
+      if (event) {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["engagement_isEmpty"]: undefined,
+        }));
+      } else {
+        setFormErrors((preState) => ({
+          ...preState,
+          ["engagement_isEmpty"]: "Engagement can not be empty",
+        }));
+      }
     }
   };
 
@@ -162,13 +192,15 @@ const ApplicationMasterEdit = () => {
       objError["applicationName_isEmpty"] = "Application Name can not be empty";
     }
 
-    if (engagement == undefined || engagement == null) {
+    if (Object.keys(engagement).length === 0) {
       objError["engagement_isEmpty"] = "Engagement can not be empty";
     }
 
     formErrorObj = objError;
     await setFormErrors(objError);
   };
+
+  console.log(engagement);
 
   return (
     <div>
@@ -186,7 +218,7 @@ const ApplicationMasterEdit = () => {
                   isDisabled={false}
                   textArea={false}
                   value={application}
-                  onChange={(e) => setApplication(e.target.value)}
+                  onChange={(e) => selectOnChange(e, "applicationName")}
                 />
                 <p style={{ color: "red" }}>
                   {formErrors["ApplicationName_exists"]}
@@ -235,13 +267,15 @@ const ApplicationMasterEdit = () => {
           <div className="d-flex justify-content-end gap-2">
             <button
               onClick={() => onClickFunction("reset")}
-              className="btn btn-reset ml-1">
+              className="btn btn-reset ml-1"
+            >
               Reset
             </button>
             <button
               style={{ background: "#96c61c" }}
               onClick={() => onClickFunction("submit")}
-              className="btn btn-save ml-1">
+              className="btn btn-save ml-1"
+            >
               Submit
             </button>
             <button onClick={() => navigate(-1)} className="btn btn-secondary">
