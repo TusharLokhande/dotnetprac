@@ -39,7 +39,7 @@ import ManagerDashboard from "../Pages/ManagerDashboard/ManagerDashboard";
 import TimeSheetPolicy from "../Pages/Master/TimeSheetPolicy/TimeSheetPolicy";
 import TimeSheetPolicyEdit from "../Pages/Master/TimeSheetPolicy/TimeSheetPolicyEdit";
 import CapacityAllocation from "../Pages/CapacityAllocation/CapacityAllocation";
-import CapacityUtilizationReport from "../Pages/Master/CapacityUtilizationReport/CapacityUtilizationReport";
+import CapacityUtilizationReport from "../Pages/Report/CapacityUtilizationReport/CapacityUtilizationReport";
 
 export const ApplicationContext = React.createContext({});
 const Router = () => {
@@ -360,7 +360,7 @@ const Router = () => {
                   element={<CapacityAllocation />}
                 />
                 <Route
-                  path={`${env}/master/capcityutilization`}
+                  path={`${env}/report/capcityutilization`}
                   element={<CapacityUtilizationReport />}
                 />
               </Routes>

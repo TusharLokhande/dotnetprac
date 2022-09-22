@@ -1,5 +1,4 @@
 ﻿using Microsoft.Data.SqlClient;
-using Prosares.Wow.Data.Entities;
 using Prosares.Wow.Data.Helpers;
 using Prosares.Wow.Data.Repository;
 using System;
@@ -15,12 +14,12 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
 {
     public class CapacityUtilizationReportService : ICapacityUtilizationReport
     {
-        private readonly IRepository<Entities.CapacityUtilizationReport> _capacity;
+        private readonly IRepository<Models.CapacityUtilizationReport> _capacity;
         private readonly IRepository<Entities.Customer> _Customer;
         private readonly IRepository<Entities.EngagementTypeOption> _EngageTypeOption;
         private readonly IRepository<Entities.EngagementMaster> _EngagementMaster;
 
-        public CapacityUtilizationReportService(IRepository<Entities.EngagementMaster> EngagementMaster, IRepository<Entities.EngagementTypeOption> EngageTypeOption,IRepository<Entities.CapacityUtilizationReport> capcity, IRepository<Entities.Customer> customer)
+        public CapacityUtilizationReportService(IRepository<Entities.EngagementMaster> EngagementMaster, IRepository<Entities.EngagementTypeOption> EngageTypeOption,IRepository<Models.CapacityUtilizationReport> capcity, IRepository<Entities.Customer> customer)
         {
             _capacity = capcity;
             _Customer = customer;
@@ -29,7 +28,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
             
         }
 
-        public dynamic GetCapacityAllocation(Entities.CapacityUtilizationReport value)
+        public dynamic GetCapacityAllocation(Models.CapacityUtilizationReport value)
         {
             CapacityUtilizationReportResponse response = new CapacityUtilizationReportResponse();
 
@@ -56,9 +55,8 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                     count = data.Count();
-                    
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 } 
                 
@@ -68,7 +66,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
@@ -80,7 +78,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.Resource != null && k.Resource.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByProperty(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -97,7 +95,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())|| k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
                                      ).ToList();
 
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 }
@@ -108,9 +106,9 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
                                      ).ToList();
-                    report = data;
+                    report = data.AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList(); ;
                     count = data.Count();
-                    data = data.Skip(value.start).Take(value.pageSize).ToList();
+                    data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
                 }
 
@@ -120,7 +118,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) || k.Engagement != null && k.Engagement.ToLower().Contains(value.searchText.ToLower()) || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Engagement != "")
                                     ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByProperty(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -139,7 +137,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                                 ||k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) 
                                                 || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByProperty(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 }
@@ -154,7 +152,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                                 || k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())
                                                 || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList(); ;
                     count = data.Count();
                     data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
@@ -170,7 +168,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                                                || k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())
                                                || k.Customer != null && k.Customer.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                     ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByProperty(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 
@@ -185,7 +183,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower())  : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByPropertyDescending("mandaysPlanned").ToList();
                 }
@@ -196,7 +194,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                        k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                     ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).AsQueryable().OrderByPropertyDescending(value.sortColumn).ToList();
 
@@ -208,7 +206,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
                     data = data.Where(
                                         k => ((value.searchText != null) ? k.EngagementType != null && k.EngagementType.ToLower().Contains(value.searchText.ToLower()) : k.Resource != "")
                                      ).ToList();
-                    report = data;
+                    report = data.ToList().AsQueryable().OrderByProperty(value.sortColumn).ToList();
                     count = data.Count();
                     data = data.Skip(value.start).Take(value.pageSize).AsQueryable().OrderByProperty(value.sortColumn).ToList();
 

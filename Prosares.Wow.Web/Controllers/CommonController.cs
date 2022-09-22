@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using Prosares.Wow.Data.Entities;
 using Prosares.Wow.Data.Models;
 using Prosares.Wow.Data.Services.Application;
 using Prosares.Wow.Data.Services.CapacityUtilizationReport;

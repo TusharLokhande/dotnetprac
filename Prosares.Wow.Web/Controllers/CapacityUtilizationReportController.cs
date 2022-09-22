@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Prosares.Wow.Data.Entities;
 using Prosares.Wow.Data.Models;
 using Prosares.Wow.Data.Services.CapacityUtilizationReport;
 

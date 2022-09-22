@@ -8,7 +8,7 @@ namespace Prosares.Wow.Data.Services.CapacityUtilizationReport
 {
     public interface ICapacityUtilizationReport
     {
-        public dynamic GetCapacityAllocation(Entities.CapacityUtilizationReport value);
+        public dynamic GetCapacityAllocation(Models.CapacityUtilizationReport value);
 
         public dynamic Getallcustomers();
 
